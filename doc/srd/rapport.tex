@@ -27,12 +27,14 @@
 \begin{itemize}
 	\item[$\bullet$] L'adresse doit se trouver dans Bruxelles (même chose pour les coordonnées GPS).
 	\item[$\bullet$] L'identifiant et l'adresse email d'un utilisateur sont uniques.
-	\item[$\bullet$] La date d'enregistrement d'un utilisateur précède celle d'ajout de commentaire et de création d'établissement si cet utilisateur est administrateur.
+	\item[$\bullet$] La date d'enregistrement d'un utilisateur précède celle d'ajout de ses commentaires. 
+	\item[$\bullet$] La date d'enregistrement d'un utilisateur précède celle de création de ses établissements.
+	\item[$\bullet$] La date de création d'un établissement précède tous les commentaires qui le concernent.
 	\item[$\bullet$] Le score dont est composé un commentaire est compris entre 0 et 5.
 	\item[$\bullet$] Un utilisateur ne peut pas commenter un même établissement 2 fois le même jour.
-	\item[$\bullet$] Un utilisateur ne peut pas ajouter un label à un établissement si ce dernier le possède déjà.
+	\item[$\bullet$] Un utilisateur ne peut pas tagger un établissement si ce dernier possède déjà ledit tag.
 	\item[$\bullet$] Un restaurant ne peut avoir plus de 14 demi journées de fermeture.
-	\item[$\bullet$] Un hôtel a au maximum 
+	\item[$\bullet$] Un hôtel a entre 0 et 5 étoiles.
 \end{itemize}
 
 \section{Modèle relationnel}
