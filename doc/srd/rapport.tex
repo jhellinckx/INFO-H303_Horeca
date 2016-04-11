@@ -42,7 +42,7 @@
 
 \section*{Modèle relationnel}
 \noindent
-Utilisateur(\underline{Identifiant}, \underline{Email}, MotDePasse, Date)\\
+Utilisateur(\underline{Identifiant}, \underline{Email}, MotDePasse, Date, EstAdmin)\\
 Etablissement(\underline{Nom}, AdresseRue, AdresseNuméro, AdresseCodePostal, AdresseLocalité, CoordonéesGPSLongitude, CoordonéesGPSLatitude, Numéro de téléphonne, \textit{LienSiteWeb})\\
 Restaurant(\underline{Nom}, FouchettePrix, PlacesMaxBanquet, PeutEmporter, PeutLivrer)
 \begin{itemize}
@@ -82,8 +82,14 @@ Modifie(\underline{ModifiéPar, Etablissement})
 \end{itemize}
 Supprime({\underline{SuppriméPar}, NomEtablissement})
 \begin{itemize}
-	\item[$\bullet$] SuppriméPar référence Utilisateur.Nom
+	\item[$\bullet$] SuppriméPar référence Utilisateur.Identifiant
 \end{itemize}
+\subsection*{Contraintes d'intégrité supplémentaires}
+\begin{itemize}
+	\item[$\bullet$] L'Utilisateur référencé via Utilisateur.Identifiant dans Modifie, Supprime et Crée doit avoir EstAdmin à vrai.
+\end{itemize}
+
+
 \subsection*{Remarques}
 \begin{itemize}
 	\item[$\bullet$] NomEtablissement dans Supprime ne référence pas Etablissement.Nom étant donné que l'Etablissement sera supprimé. On utilise donc le nom de l'Etablissement supprimé, pas une clé.
