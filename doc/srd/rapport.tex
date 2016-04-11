@@ -43,10 +43,7 @@
 \section*{Modèle relationnel}
 \noindent
 Utilisateur(\underline{Identifiant}, \underline{Email}, MotDePasse, Date)\\
-Etablissement(\underline{Nom}, AdresseRue, AdresseNuméro, AdresseCodePostal, AdresseLocalité, CoordonéesGPSLongitude, CoordonéesGPSLatitude, Numéro de téléphonne, \textit{LienSiteWeb}, Créateur)
-\begin{itemize}
-	\item[$\bullet$] Créateur référence Utilisateur.Identifiant
-\end{itemize}
+Etablissement(\underline{Nom}, AdresseRue, AdresseNuméro, AdresseCodePostal, AdresseLocalité, CoordonéesGPSLongitude, CoordonéesGPSLatitude, Numéro de téléphonne, \textit{LienSiteWeb})\\
 Restaurant(\underline{Nom}, FouchettePrix, PlacesMaxBanquet, PeutEmporter, PeutLivrer)
 \begin{itemize}
 	\item[$\bullet$] Nom référence Etablissement.Nom
@@ -73,6 +70,11 @@ Tagge(\underline{Utilisateur, Etablissement}, Nom)
 	\item[$\bullet$] Utilisateur référence Utilisateur.Identifiant
 	\item[$\bullet$] Etablissement référence Etablissement.Nom
 \end{itemize}
+Crée(\underline{Créateur, Etablissement})
+\begin{itemize}
+	\item[$\bullet$] Créateur référence Utilisateur.Identifiant
+	\item[$\bullet$] Nom référence Etablissement.Nom
+\end{itemize}
 Modifie(\underline{ModifiéPar, Etablissement})
 \begin{itemize}
 	\item[$\bullet$] ModifiéPar référence Utilisateur.Identifiant
@@ -80,14 +82,8 @@ Modifie(\underline{ModifiéPar, Etablissement})
 \end{itemize}
 Supprime({\underline{SuppriméPar}, NomEtablissement})
 \begin{itemize}
-	\item[$\bullet$] SuppriméPar référence Utilisateur.nom
+	\item[$\bullet$] SuppriméPar référence Utilisateur.Nom
 \end{itemize}
-
-\subsection*{Contraintes d'intégrité supplémentaire}
-\begin{itemize}
-	\item[$\bullet$] 
-\end{itemize}
-
 \subsection*{Remarques}
 \begin{itemize}
 	\item[$\bullet$] NomEtablissement dans Supprime ne référence pas Etablissement.Nom étant donné que l'Etablissement sera supprimé. On utilise donc le nom de l'Etablissement supprimé, pas une clé.
