@@ -42,12 +42,12 @@
 
 \section*{Modèle relationnel}
 \noindent
-Utilisateur(\underline{Identifiant}, \underline{Email}, Mot de passe, Date) \newline
-Etablissement(\underline{Nom}, AdresseRue, AdresseNuméro, AdresseCodePostal, AdresseLocalité, CoordonéesGPSLongitude, CoordonéesGPSLatitude, Numéro de téléphonne, \textit{Lien site web}, Utilisateur)
+Utilisateur(\underline{Identifiant}, \underline{Email}, MotDePasse, Date)
+Etablissement(\underline{Nom}, AdresseRue, AdresseNuméro, AdresseCodePostal, AdresseLocalité, CoordonéesGPSLongitude, CoordonéesGPSLatitude, Numéro de téléphonne, \textit{LienSiteWeb}, Créateur)
 \begin{itemize}
-	\item[$\bullet$] Utilisateur référence Utilisateur.Identifiant
+	\item[$\bullet$] Créateur référence Utilisateur.Identifiant
 \end{itemize}
-Restaurant(\underline{Nom}, Fouchette de prix, Places max. banquet, Peut emporter, Peut livrer)
+Restaurant(\underline{Nom}, FouchettePrix, PlacesMaxBanquet, PeutEmporter, PeutLivrer)
 \begin{itemize}
 	\item[$\bullet$] Nom référence Etablissement.Nom
 \end{itemize}
@@ -55,11 +55,11 @@ RestaurantFermetures(\underline{Nom, FermeturesJour, FermeturesAM, FermeturesPM}
 \begin{itemize}
 	\item[$\bullet$] Nom référence Etablissement.Nom
 \end{itemize}
-Bar(\underline{Nom}, Fumeur, Petite restauration)
+Bar(\underline{Nom}, Fumeur, PetiteRestauration)
 \begin{itemize}
 	\item[$\bullet$] Nom référence Etablissement.Nom
 \end{itemize}
-Hôtel(\underline{Nom}, Etoiles, Nombre chambres, Indice de prix)
+Hôtel(\underline{Nom}, Etoiles, NombreChambres, IndicePrix)
 \begin{itemize}
 	\item[$\bullet$] Nom référence Etablissement.Nom
 \end{itemize}
@@ -71,18 +71,26 @@ Commente(\underline{Utilisateur, Etablissement}, Date, Score, Texte)
 Tagge(\underline{Utilisateur, Etablissement}, Nom)
 \begin{itemize}
 	\item[$\bullet$] Utilisateur référence Utilisateur.Identifiant
+	\item[$\bullet$] Etablissement référence Etablissement.Nom
+\end{itemize}
+Modifie(\underline{ModifiéPar, Etablissement})
+\begin{itemize}
+	\item[$\bullet$] ModifiéPar référence Utilisateur.Identifiant
 	\item[$\bullet$] Nom référence Etablissement.Nom
 \end{itemize}
-Modifie(\underline{Utilisateur, Etablissement})
+Supprime({\underline{SuppriméPar}, NomEtablissement})
 \begin{itemize}
-	\item[$\bullet$] Utilisateur référence Utilisateur.Identifiant
-	\item[$\bullet$] Nom référence Etablissement.Nom
-\end{itemize}
-Création(\underline{Utilisateur, Etablissement}, Date)
-\begin{itemize}
-	\item[$\bullet$] Utilisateur référence Utilisateur.Identifiant
-	\item[$\bullet$] Nom référence Etablissement.Nom
+	\item[$\bullet$] SuppriméPar référence Utilisateur.nom
 \end{itemize}
 
+\subsection*{Contraintes d'intégrité supplémentaire}
+\begin{itemize}
+	\item[$\bullet$] 
+\end{itemize}
+
+\subsection*{Remarques}
+\begin{itemize}
+	\item[$\bullet$] NomEtablissement dans Supprime ne référence pas Etablissement.Nom étant donné que l'Etablissement sera supprimé. On utilise donc le nom de l'Etablissement supprimé, pas une clé.
+\end{itemize}
 
 \end{document}
