@@ -41,5 +41,48 @@
 \end{itemize}
 
 \section*{Modèle relationnel}
+\noindent
+Utilisateur(\underline{Identifiant}, \underline{Email}, Mot de passe, Date) \newline
+Etablissement(\underline{Nom}, AdresseRue, AdresseNuméro, AdresseCodePostal, AdresseLocalité, CoordonéesGPSLongitude, CoordonéesGPSLatitude, Numéro de téléphonne, \textit{Lien site web}, Utilisateur)
+\begin{itemize}
+	\item[$\bullet$] Utilisateur référence Utilisateur.Identifiant
+\end{itemize}
+Restaurant(\underline{Nom}, Fouchette de prix, Places max. banquet, Peut emporter, Peut livrer)
+\begin{itemize}
+	\item[$\bullet$] Nom référence Etablissement.Nom
+\end{itemize}
+RestaurantFermetures(\underline{Nom, FermeturesJour, FermeturesAM, FermeturesPM})
+\begin{itemize}
+	\item[$\bullet$] Nom référence Etablissement.Nom
+\end{itemize}
+Bar(\underline{Nom}, Fumeur, Petite restauration)
+\begin{itemize}
+	\item[$\bullet$] Nom référence Etablissement.Nom
+\end{itemize}
+Hôtel(\underline{Nom}, Etoiles, Nombre chambres, Indice de prix)
+\begin{itemize}
+	\item[$\bullet$] Nom référence Etablissement.Nom
+\end{itemize}
+Commente(\underline{Utilisateur, Etablissement}, Date, Score, Texte)
+\begin{itemize}
+	\item[$\bullet$] Utilisateur référence Utilisateur.Identifiant
+	\item[$\bullet$] Nom référence Etablissement.Nom
+\end{itemize}
+Tagge(\underline{Utilisateur, Etablissement}, Nom)
+\begin{itemize}
+	\item[$\bullet$] Utilisateur référence Utilisateur.Identifiant
+	\item[$\bullet$] Nom référence Etablissement.Nom
+\end{itemize}
+Modifie(\underline{Utilisateur, Etablissement})
+\begin{itemize}
+	\item[$\bullet$] Utilisateur référence Utilisateur.Identifiant
+	\item[$\bullet$] Nom référence Etablissement.Nom
+\end{itemize}
+Création(\underline{Utilisateur, Etablissement}, Date)
+\begin{itemize}
+	\item[$\bullet$] Utilisateur référence Utilisateur.Identifiant
+	\item[$\bullet$] Nom référence Etablissement.Nom
+\end{itemize}
+
 
 \end{document}
