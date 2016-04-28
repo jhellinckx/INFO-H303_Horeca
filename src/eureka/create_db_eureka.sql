@@ -47,6 +47,7 @@ CREATE TABLE RestaurantClosures(
 	pm BOOLEAN NOT NULL,
 	establishment_id INT UNSIGNED NOT NULL,
 	INDEX(establishment_id),
+	CONSTRAINT numbers_of_closures_max_7 CHECK((SELECT COUNT(establishment_id)) <= 7),
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
 
@@ -98,3 +99,4 @@ CREATE TABLE EstablishmentTags(
 	FOREIGN KEY (tag_name) REFERENCES Tag(name) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
+
