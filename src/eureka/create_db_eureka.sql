@@ -1,19 +1,13 @@
-DROP DATABASE IF EXISTS db_eureka;
-CREATE DATABASE db_eureka;
-
-CREATE TABLE db_eureka.User(
-	name VARCHAR(16) NOT NULL,
-	email VARCHAR(255) NOT NULL,
+CREATE TABLE "User"(
+	name VARCHAR(16) NOT NULL PRIMARY KEY,
+	email VARCHAR(255) NOT NULL UNIQUE,
 	password VARCHAR(128) NOT NULL,
-	signup_date DATETIME NOT NULL,
-	is_admin BOOLEAN NOT NULL,
-	PRIMARY KEY(name),
-	UNIQUE(email),
-	INDEX(email)
+	signup_date TIMESTAMP NOT NULL,
+	is_admin BOOLEAN NOT NULL
 );
 
-CREATE TABLE Establishment(
-	id INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE "Establishment"(
+	id SERIAL,
 	name VARCHAR(16) NOT NULL,
 	address_street VARCHAR(64) NOT NULL,
 	address_number SMALLINT NOT NULL,
@@ -30,9 +24,9 @@ CREATE TABLE Establishment(
 	INDEX(creator_name),
 	PRIMARY KEY(id),
 	FOREIGN KEY (creator_name) REFERENCES User(name) ON DELETE RESTRICT
-);
+)
 
-CREATE TABLE Restaurant(
+CREATE TABLE "Restaurant"(
 	price_range FLOAT(6,2) NOT NULL,
 	banquet_capacity INT NOT NULL,
 	take_away BOOLEAN NOT NULL,
@@ -42,7 +36,7 @@ CREATE TABLE Restaurant(
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
 
-CREATE TABLE RestaurantClosures(
+CREATE TABLE "RestaurantClosures"(
 	day VARCHAR(16) NOT NULL,
 	am BOOLEAN NOT NULL,
 	pm BOOLEAN NOT NULL,
@@ -52,7 +46,7 @@ CREATE TABLE RestaurantClosures(
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
 
-CREATE TABLE Bar(
+CREATE TABLE "Bar"(
 	smoking BOOLEAN NOT NULL,
 	snack BOOLEAN NOT NULL,
 	establishment_id INT NOT NULL,
@@ -60,7 +54,7 @@ CREATE TABLE Bar(
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
 
-CREATE TABLE Hotel(
+CREATE TABLE "Hotel"(
 	stars TINYINT NOT NULL,
 	rooms_number INT NOT NULL,
 	price_range FLOAT(6,2) NOT NULL,
@@ -70,8 +64,8 @@ CREATE TABLE Hotel(
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
 
-CREATE TABLE EstablishmentComment(
-	written_date DATETIME NOT NULL,
+CREATE TABLE "EstablishmentComment"(
+	written_date TIMESTAMP NOT NULL,
 	score TINYINT NOT NULL,
 	comment_text TEXT NOT NULL,
 	user_name VARCHAR(16) NOT NULL,
@@ -87,12 +81,12 @@ CREATE TABLE EstablishmentComment(
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
 
-CREATE TABLE Tag(
+CREATE TABLE "Tag"(
 	name VARCHAR(16) NOT NULL,
 	PRIMARY KEY (name)
 );
 
-CREATE TABLE EstablishmentTags(
+CREATE TABLE "EstablishmentTags"(
 	establishment_id INT NOT NULL,
 	tag_name VARCHAR(16) NOT NULL,
 	user_name VARCHAR(16) NOT NULL,
