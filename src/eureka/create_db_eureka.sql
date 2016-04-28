@@ -63,18 +63,21 @@ CREATE TABLE Hotel(
 	rooms_number INT UNSIGNED NOT NULL,
 	price_range FLOAT(6,2) NOT NULL,
 	establishment_id INT UNSIGNED NOT NULL,
+	CONSTRAINT stars_between_0_and_5 CHECK(stars>=0 AND stars<=5),
 	PRIMARY KEY(establishment_id),
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
 
 CREATE TABLE EstablishmentComment(
-	written_date DATETIME NOT NULL,
+	written_date DATE NOT NULL,
 	score TINYINT UNSIGNED NOT NULL,
 	comment_text TEXT NOT NULL,
 	user_name VARCHAR(16) NOT NULL,
 	establishment_id INT UNSIGNED NOT NULL,
 	INDEX(user_name),
 	INDEX(establishment_id),
+	CONSTRAINT score_between_0_and_5 CHECK(score>=0 AND score<=5),
+	CONSTRAINT one_comment_per_day_by_user_and_establishment UNIQUE(written_date,user_name,establishment_id),
 	FOREIGN KEY (user_name) REFERENCES User(name) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
@@ -90,6 +93,7 @@ CREATE TABLE EstablishmentTags(
 	user_name VARCHAR(16) NOT NULL,
 	INDEX(establishment_id),
 	INDEX(tag_name),
+	CONSTRAINT one_tag_by_user_by_establishment UNIQUE(establishment_id, tag_name, user_name),
 	FOREIGN KEY (user_name) REFERENCES User(name) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (tag_name) REFERENCES Tag(name) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
