@@ -6,7 +6,7 @@ CREATE TABLE User(
 	name VARCHAR(16) NOT NULL,
 	email VARCHAR(32) NOT NULL,
 	password VARCHAR(128) NOT NULL,
-	signup_date DATE NOT NULL,
+	signup_date DATETIME NOT NULL,
 	is_admin BOOLEAN NOT NULL,
 	PRIMARY KEY(name),
 	UNIQUE(email),
@@ -26,6 +26,8 @@ CREATE TABLE Establishment(
 	website VARCHAR(255),
 	creator_name VARCHAR(16) NOT NULL,
 	created_time DATE NOT NULL,
+	CONSTRAINT created_time_posterior_creator_signup CHECK(created_time >= (SELECT signup_date FROM User WHERE name=creator_name)),
+	CONSTRAINT creator_is_admin CHECK((SELECT is_admin FROM User WHERE name=creator_name) = 1),
 	INDEX(creator_name),
 	PRIMARY KEY(id),
 	FOREIGN KEY (creator_name) REFERENCES User(name) ON DELETE RESTRICT
@@ -70,7 +72,7 @@ CREATE TABLE Hotel(
 );
 
 CREATE TABLE EstablishmentComment(
-	written_date DATE NOT NULL,
+	written_date DATETIME NOT NULL,
 	score TINYINT UNSIGNED NOT NULL,
 	comment_text TEXT NOT NULL,
 	user_name VARCHAR(16) NOT NULL,
@@ -79,6 +81,8 @@ CREATE TABLE EstablishmentComment(
 	INDEX(establishment_id),
 	CONSTRAINT score_between_0_and_5 CHECK(score>=0 AND score<=5),
 	CONSTRAINT one_comment_per_day_by_user_and_establishment UNIQUE(written_date,user_name,establishment_id),
+	CONSTRAINT comment_date_posterior_user_signup_date CHECK(written_date >= (SELECT signup_date FROM User WHERE name=user_name)),
+	CONSTRAINT comment_date_posterior_establishment_creation_date CHECK(written_date >= (SELECT created_time FROM Establishment WHERE id=establishment_id)),
 	FOREIGN KEY (user_name) REFERENCES User(name) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
