@@ -7,7 +7,7 @@ CREATE TABLE "User"(
 );
 
 CREATE TABLE "Establishment"(
-	id SERIAL NOT NULL,
+	id SERIAL NOT NULL CHECK (id>=0),
 	name VARCHAR(16) NOT NULL,
 	address_street VARCHAR(64) NOT NULL,
 	address_number SMALLINT NOT NULL,
@@ -19,21 +19,20 @@ CREATE TABLE "Establishment"(
 	website VARCHAR(255),
 	creator_name VARCHAR(16) NOT NULL,
 	created_time DATE NOT NULL,
-	CONSTRAINT created_time_posterior_creator_signup CHECK(created_time >= (SELECT signup_date FROM User WHERE name=creator_name)),
-	CONSTRAINT creator_is_admin CHECK((SELECT is_admin FROM User WHERE name=creator_name) = 1),
-	INDEX(creator_name),
 	PRIMARY KEY(id),
-	FOREIGN KEY (creator_name) REFERENCES User(name) ON DELETE RESTRICT
-)
+	FOREIGN KEY (creator_name) REFERENCES "User"(name) ON DELETE RESTRICT
+);
+
+CREATE INDEX "creator_name" ON "Establishment"(creator_name);
 
 CREATE TABLE "Restaurant"(
-	price_range FLOAT(6,2) NOT NULL,
-	banquet_capacity INT NOT NULL,
+	price_range NUMERIC(6,2) NOT NULL CHECK (price_range>=0),
+	banquet_capacity INT NOT NULL CHECK (banquet_capacity>=0),
 	take_away BOOLEAN NOT NULL,
 	delivery BOOLEAN NOT NULL,
 	establishment_id INT NOT NULL,
 	PRIMARY KEY(establishment_id),
-	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
+	FOREIGN KEY (establishment_id) REFERENCES "Establishment"(id) ON DELETE CASCADE
 );
 
 CREATE TABLE "RestaurantClosures"(
@@ -41,45 +40,43 @@ CREATE TABLE "RestaurantClosures"(
 	am BOOLEAN NOT NULL,
 	pm BOOLEAN NOT NULL,
 	establishment_id INT NOT NULL,
-	INDEX(establishment_id),
-	CONSTRAINT numbers_of_closures_max_7 CHECK((SELECT COUNT(establishment_id)) <= 7),
-	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
+	FOREIGN KEY (establishment_id) REFERENCES "Establishment"(id) ON DELETE CASCADE
 );
+
+CREATE INDEX "establishment_id_closures" ON "RestaurantClosures"(establishment_id);
 
 CREATE TABLE "Bar"(
 	smoking BOOLEAN NOT NULL,
 	snack BOOLEAN NOT NULL,
-	establishment_id INT NOT NULL,
+	establishment_id INT NOT NULL CHECK (establishment_id>=0),
 	PRIMARY KEY(establishment_id),
-	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
+	FOREIGN KEY (establishment_id) REFERENCES "Establishment"(id) ON DELETE CASCADE
 );
 
 CREATE TABLE "Hotel"(
-	stars TINYINT NOT NULL,
-	rooms_number INT NOT NULL,
-	price_range FLOAT(6,2) NOT NULL,
-	establishment_id INT NOT NULL,
-	CONSTRAINT stars_between_0_and_5 CHECK(stars>=0 AND stars<=5),
+	stars SMALLINT NOT NULL CHECK (stars>=0 and stars <=5),
+	rooms_number INT NOT NULL CHECK (rooms_number>=0),
+	price_range NUMERIC(6,2) NOT NULL CHECK (price_range>=0),
+	establishment_id INT NOT NULL CHECK (establishment_id>=0),
 	PRIMARY KEY(establishment_id),
-	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
+	FOREIGN KEY (establishment_id) REFERENCES "Establishment"(id) ON DELETE CASCADE
 );
 
 CREATE TABLE "EstablishmentComment"(
 	written_date TIMESTAMP NOT NULL,
-	score TINYINT NOT NULL,
+	score SMALLINT NOT NULL CHECK (score>=0 and score<=5),
 	comment_text TEXT NOT NULL,
 	user_name VARCHAR(16) NOT NULL,
-	establishment_id INT NOT NULL,
-	INDEX(user_name),
-	INDEX(establishment_id),
-	CONSTRAINT score_between_0_and_5 CHECK(score>=0 AND score<=5),
-	CONSTRAINT one_comment_per_day_by_user_and_establishment CHECK((SELECT COUNT(written_date))
+	establishment_id INT NOT NULL CHECK (establishment_id>=0),
 	CONSTRAINT one_comment_per_day_by_user_and_establishment UNIQUE(written_date,user_name,establishment_id),
-	CONSTRAINT comment_date_posterior_user_signup_date CHECK(written_date >= (SELECT signup_date FROM User WHERE name=user_name)),
-	CONSTRAINT comment_date_posterior_establishment_creation_date CHECK(written_date >= (SELECT created_time FROM Establishment WHERE id=establishment_id)),
-	FOREIGN KEY (user_name) REFERENCES User(name) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
+	FOREIGN KEY (user_name) REFERENCES "User"(name) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (establishment_id) REFERENCES "Establishment"(id) ON DELETE CASCADE
 );
+
+CREATE INDEX "establishment_id_comment" ON "EstablishmentComment"(establishment_id);
+CREATE INDEX "user_name" ON "EstablishmentComment"(user_name);
+
+
 
 CREATE TABLE "Tag"(
 	name VARCHAR(16) NOT NULL,
@@ -87,14 +84,14 @@ CREATE TABLE "Tag"(
 );
 
 CREATE TABLE "EstablishmentTags"(
-	establishment_id INT NOT NULL,
+	establishment_id INT NOT NULL CHECK (establishment_id>=0),
 	tag_name VARCHAR(16) NOT NULL,
 	user_name VARCHAR(16) NOT NULL,
-	INDEX(establishment_id),
-	INDEX(tag_name),
 	CONSTRAINT one_tag_by_user_by_establishment UNIQUE(establishment_id, tag_name, user_name),
-	FOREIGN KEY (user_name) REFERENCES User(name) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (tag_name) REFERENCES Tag(name) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
+	FOREIGN KEY (user_name) REFERENCES "User"(name) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (tag_name) REFERENCES "Tag"(name) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (establishment_id) REFERENCES "Establishment"(id) ON DELETE CASCADE
 );
 
+CREATE INDEX "establishment_id_tags" ON "EstablishmentTags"(establishment_id);
+CREATE INDEX "tag_name" ON "EstablishmentTags"(tag_name);
