@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS db_eureka;
 CREATE DATABASE db_eureka;
 USE db_eureka;
 
@@ -7,9 +8,9 @@ CREATE TABLE User(
 	password VARCHAR(128) NOT NULL,
 	signup_date DATE NOT NULL,
 	is_admin BOOLEAN NOT NULL,
-	PRIMARY KEY(username),
+	PRIMARY KEY(name),
 	UNIQUE(email),
-	INDEX(email),
+	INDEX(email)
 );
 
 CREATE TABLE Establishment(
@@ -25,8 +26,9 @@ CREATE TABLE Establishment(
 	website VARCHAR(255),
 	creator_name VARCHAR(16) NOT NULL,
 	created_time DATE NOT NULL,
+	INDEX(creator_name),
 	PRIMARY KEY(id),
-	FOREIGN KEY (creator_name) REFERENCES User(name) ON DELETE RESTRICT;
+	FOREIGN KEY (creator_name) REFERENCES User(name) ON DELETE RESTRICT
 );
 
 CREATE TABLE Restaurant(
@@ -36,7 +38,7 @@ CREATE TABLE Restaurant(
 	delivery BOOLEAN NOT NULL,
 	establishment_id INT UNSIGNED NOT NULL,
 	PRIMARY KEY(establishment_id),
-	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE;
+	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
 
 CREATE TABLE RestaurantClosures(
@@ -45,7 +47,7 @@ CREATE TABLE RestaurantClosures(
 	pm BOOLEAN NOT NULL,
 	establishment_id INT UNSIGNED NOT NULL,
 	INDEX(establishment_id),
-	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE;
+	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Bar(
@@ -53,7 +55,7 @@ CREATE TABLE Bar(
 	snack BOOLEAN NOT NULL,
 	establishment_id INT UNSIGNED NOT NULL,
 	PRIMARY KEY(establishment_id),
-	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE;
+	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Hotel(
@@ -62,23 +64,24 @@ CREATE TABLE Hotel(
 	price_range FLOAT(6,2) NOT NULL,
 	establishment_id INT UNSIGNED NOT NULL,
 	PRIMARY KEY(establishment_id),
-	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE;
+	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
 
-CREATE TABLE Comment(
+CREATE TABLE EstablishmentComment(
 	written_date DATETIME NOT NULL,
 	score TINYINT UNSIGNED NOT NULL,
 	comment_text TEXT NOT NULL,
-	username VARCHAR(16) NOT NULL,
+	user_name VARCHAR(16) NOT NULL,
 	establishment_id INT UNSIGNED NOT NULL,
-	FOREIGN KEY (user_name) REFERENCES User(name) ON DELETE CASCADE ON UPDATE CASCADE; 
-	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE;
+	INDEX(user_name),
+	INDEX(establishment_id),
+	FOREIGN KEY (user_name) REFERENCES User(name) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Tag(
 	name VARCHAR(16) NOT NULL,
 	PRIMARY KEY (name)
-	UNIQUE(name)
 );
 
 CREATE TABLE EstablishmentTags(
@@ -87,7 +90,7 @@ CREATE TABLE EstablishmentTags(
 	user_name VARCHAR(16) NOT NULL,
 	INDEX(establishment_id),
 	INDEX(tag_name),
-	FOREIGN KEY (user_name) REFERENCES User(name) ON DELETE CASCADE ON UPDATE CASCADE;
-	FOREIGN KEY (tag_name) REFERENCES Tag(name) ON DELETE CASCADE ON UPDATE CASCADE;
-	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE;
+	FOREIGN KEY (user_name) REFERENCES User(name) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (tag_name) REFERENCES Tag(name) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE
 );
