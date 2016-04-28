@@ -24,7 +24,7 @@ CREATE TABLE "Establishment"(
 	INDEX(creator_name),
 	PRIMARY KEY(id),
 	FOREIGN KEY (creator_name) REFERENCES User(name) ON DELETE RESTRICT
-);
+)
 
 CREATE TABLE "Restaurant"(
 	price_range FLOAT(6,2) NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE "Hotel"(
 );
 
 CREATE TABLE "EstablishmentComment"(
-	written_date DATETIME NOT NULL,
+	written_date TIMESTAMP NOT NULL,
 	score TINYINT NOT NULL,
 	comment_text TEXT NOT NULL,
 	user_name VARCHAR(16) NOT NULL,
