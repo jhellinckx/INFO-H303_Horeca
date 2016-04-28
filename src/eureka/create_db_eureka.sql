@@ -4,7 +4,7 @@ USE db_eureka;
 
 CREATE TABLE User(
 	name VARCHAR(16) NOT NULL,
-	email VARCHAR(32) NOT NULL,
+	email VARCHAR(255) NOT NULL,
 	password VARCHAR(128) NOT NULL,
 	signup_date DATETIME NOT NULL,
 	is_admin BOOLEAN NOT NULL,

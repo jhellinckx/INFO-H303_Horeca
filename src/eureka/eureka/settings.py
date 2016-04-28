@@ -76,10 +76,10 @@ WSGI_APPLICATION = 'eureka.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME' : 'db_eureka',
-        'USER' : 'django',
-        'PASSWORD' : 'django',
+        'USER' : 'postgres',
+        'PASSWORD' : 'postgres',
         'HOST' : '127.0.0.1',
         'PORT' : '',
     }
