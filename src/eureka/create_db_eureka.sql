@@ -8,9 +8,8 @@ CREATE TABLE User(
 	signup_date DATE NOT NULL,
 	is_admin BOOLEAN NOT NULL,
 	PRIMARY KEY(username),
-	PRIMARY KEY(email),
-	UNIQUE(username),
-	UNIQUE(email)
+	UNIQUE(email),
+	INDEX(email),
 );
 
 CREATE TABLE Establishment(
@@ -24,8 +23,10 @@ CREATE TABLE Establishment(
 	gps_latitude FLOAT(12, 8) NOT NULL,
 	phone_number VARCHAR(16) NOT NULL,
 	website VARCHAR(255),
-	created_by
-	PRIMARY KEY(id)
+	creator_name VARCHAR(16) NOT NULL,
+	created_time DATE NOT NULL,
+	PRIMARY KEY(id),
+	FOREIGN KEY (creator_name) REFERENCES User(name) ON DELETE RESTRICT;
 );
 
 CREATE TABLE Restaurant(
@@ -34,6 +35,7 @@ CREATE TABLE Restaurant(
 	take_away BOOLEAN NOT NULL,
 	delivery BOOLEAN NOT NULL,
 	establishment_id INT UNSIGNED NOT NULL,
+	PRIMARY KEY(establishment_id),
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE;
 );
 
@@ -42,7 +44,7 @@ CREATE TABLE RestaurantClosures(
 	am BOOLEAN NOT NULL,
 	pm BOOLEAN NOT NULL,
 	establishment_id INT UNSIGNED NOT NULL,
-	PRIMARY KEY(day),
+	INDEX(establishment_id),
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE;
 );
 
@@ -50,6 +52,7 @@ CREATE TABLE Bar(
 	smoking BOOLEAN NOT NULL,
 	snack BOOLEAN NOT NULL,
 	establishment_id INT UNSIGNED NOT NULL,
+	PRIMARY KEY(establishment_id),
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE;
 );
 
@@ -58,6 +61,7 @@ CREATE TABLE Hotel(
 	rooms_number INT UNSIGNED NOT NULL,
 	price_range FLOAT(6,2) NOT NULL,
 	establishment_id INT UNSIGNED NOT NULL,
+	PRIMARY KEY(establishment_id),
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE;
 );
 
@@ -68,5 +72,22 @@ CREATE TABLE Comment(
 	username VARCHAR(16) NOT NULL,
 	establishment_id INT UNSIGNED NOT NULL,
 	FOREIGN KEY (user_name) REFERENCES User(name) ON DELETE CASCADE ON UPDATE CASCADE; 
+	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE;
+);
+
+CREATE TABLE Tag(
+	name VARCHAR(16) NOT NULL,
+	PRIMARY KEY (name)
+	UNIQUE(name)
+);
+
+CREATE TABLE EstablishmentTags(
+	establishment_id INT UNSIGNED NOT NULL,
+	tag_name VARCHAR(16) NOT NULL,
+	user_name VARCHAR(16) NOT NULL,
+	INDEX(establishment_id),
+	INDEX(tag_name),
+	FOREIGN KEY (user_name) REFERENCES User(name) ON DELETE CASCADE ON UPDATE CASCADE;
+	FOREIGN KEY (tag_name) REFERENCES Tag(name) ON DELETE CASCADE ON UPDATE CASCADE;
 	FOREIGN KEY (establishment_id) REFERENCES Establishment(id) ON DELETE CASCADE;
 );
