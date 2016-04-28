@@ -4,8 +4,8 @@ class Establishmentcomment(models.Model):
     written_date = models.DateTimeField()
     score = models.SmallIntegerField()
     comment_text = models.TextField()
-    user_name = models.ForeignKey('User', db_column='user_name')
-    establishment = models.ForeignKey(Establishment)
+    user_name = models.ForeignKey('users.User', db_column='user_name')
+    establishment_id = models.ForeignKey('establishments.Establishment')
 
     class Meta:
         managed = False

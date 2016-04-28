@@ -10,8 +10,10 @@ class Establishment(models.Model):
     gps_latitude = models.DecimalField(max_digits=12, decimal_places=8)
     phone_number = models.CharField(max_length=16)
     website = models.URLField(max_length=255, blank=True, null=True)
-    creator_name = models.ForeignKey('User', db_column='creator_name')
+    creator_name = models.ForeignKey('users.User', db_column='creator_name')
     created_time = models.DateField()
+
+    
 
     class Meta:
         managed = False

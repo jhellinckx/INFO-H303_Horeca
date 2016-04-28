@@ -8,9 +8,9 @@ class Tag(models.Model):
         db_table = 'Tag'
 
 class Establishmenttags(models.Model):
-    establishment = models.ForeignKey(Establishment)
+    establishment_id = models.ForeignKey('establishments.Establishment')
     tag_name = models.ForeignKey('Tag', db_column='tag_name')
-    user_name = models.ForeignKey('User', db_column='user_name')
+    user_name = models.ForeignKey('users.User', db_column='user_name')
 
     class Meta:
         managed = False
