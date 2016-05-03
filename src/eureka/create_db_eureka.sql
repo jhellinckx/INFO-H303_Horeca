@@ -8,7 +8,7 @@ CREATE TABLE "User"(
 
 CREATE TABLE "Establishment"(
 	id SERIAL NOT NULL CHECK (id>=0),
-	name VARCHAR(16) NOT NULL,
+	name VARCHAR(64) NOT NULL,
 	address_street VARCHAR(64) NOT NULL,
 	address_number SMALLINT NOT NULL,
 	address_postcode INT NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE "Establishment"(
 	gps_latitude NUMERIC(12, 8) NOT NULL,
 	phone_number VARCHAR(16) NOT NULL,
 	website VARCHAR(255),
-	creator_name VARCHAR(16) NOT NULL,
+	creator_name VARCHAR(32) NOT NULL,
 	created_time DATE NOT NULL,
 	PRIMARY KEY(id),
 	FOREIGN KEY (creator_name) REFERENCES "User"(name) ON DELETE RESTRICT
@@ -79,13 +79,13 @@ CREATE INDEX "user_name" ON "EstablishmentComment"(user_name);
 
 
 CREATE TABLE "Tag"(
-	name VARCHAR(16) NOT NULL,
+	name VARCHAR(32) NOT NULL,
 	PRIMARY KEY (name)
 );
 
 CREATE TABLE "EstablishmentTags"(
 	establishment_id INT NOT NULL CHECK (establishment_id>=0),
-	tag_name VARCHAR(16) NOT NULL,
+	tag_name VARCHAR(32) NOT NULL,
 	user_name VARCHAR(16) NOT NULL,
 	CONSTRAINT one_tag_by_user_by_establishment UNIQUE(establishment_id, tag_name, user_name),
 	FOREIGN KEY (user_name) REFERENCES "User"(name) ON DELETE CASCADE ON UPDATE CASCADE,
