@@ -1,25 +1,12 @@
+{% extends "establishments/establishment_detail.html" %}
+
+{% block establishment_name %}
 <h1> Restaurant: {{ name }} </h1>
+{% endblock %}
 
-<h2> Tel: {{ phone_number }} <h2>
-
-{% if website %}
-<h2> Website : <a href=http://{{website}}>{{ website }} </a></h2>
-{% endif %}
-
-<h3> Address: </h3>
-<ul>
-	<li> Street: {{ address_street }} </li>
-	<li> Number: {{ address_number }} </li>
-	<li> Post code: {{ address_postcode }} </li>
-	<li> Locality: {{ address_locality }} </li>
-	<li> Longitude: {{ gps_longitude }} </li>
-	<li> Latitude: {{ gps_latitude }} </li>
-</ul>
-
-<h3> Price range : {{price_range}} </h3>
-<h3> Banquet capacity : {{banquet_capacity}} </h3>
-<h3> Take Away : {{take_away}} </h3>
-<h3> Delivery : {{delivery}} </h3>
-
-
-Created by: {{ creator_name}}, on {{ created_time}}.
+{% block specific_infos %}
+<h3> Price range: {{price_range}} </h3>
+<h3> Banquet capacity: {{banquet_capacity}} </h3>
+<h3> Take Away: {{take_away}} </h3>
+<h3> Delivery: {{delivery}} </h3>
+ {% endblock %}

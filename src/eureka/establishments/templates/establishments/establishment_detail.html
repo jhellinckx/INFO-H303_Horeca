@@ -1,0 +1,48 @@
+{% load dictionary_tag %}
+{% block establishment_name %}
+<h1> Establishment: {{ name }} </h1>
+{% endblock %}
+
+<h2> Tel: {{ phone_number }} <h2>
+
+{% if website %}
+<h2> Website : <a href=http://{{website}}>{{ website }} </a></h2>
+{% endif %}
+
+<h3> Address: </h3>
+<ul>
+	<li> Street: {{ address_street }} </li>
+	<li> Number: {{ address_number }} </li>
+	<li> Post code: {{ address_postcode }} </li>
+	<li> Locality: {{ address_locality }} </li>
+	<li> Longitude: {{ gps_longitude }} </li>
+	<li> Latitude: {{ gps_latitude }} </li>
+</ul>
+
+<h3> Tags: </h3>
+{% if tags_list %}
+	<ul>
+	{% for tag in tags_list %}
+		<li> {{ tag.tag_name.name }} x{{ tags_score|get_item:tag.tag_name.name }}</li>
+	{% endfor %}
+	</ul>
+{% endif %}
+
+{% if average_score %}
+	<h3>Average score: {{ average_score }}/5 </h3>
+{% endif %}
+
+<h3> Comments: </h3>
+{% if comments_list %}
+	<ul>
+	{% for comment in comments_list %}
+		<li> {{ comment.user_name.name }} - {{comment.score}}/5 - {{ comment.written_date}} <br> {{ comment.comment_text }}</li>
+	{% endfor %}
+	</ul>
+{% endif %}
+
+{% block specific_infos %}
+LoL
+{% endblock %}
+
+Created by: {{ creator_name}}, on {{ created_time}}.

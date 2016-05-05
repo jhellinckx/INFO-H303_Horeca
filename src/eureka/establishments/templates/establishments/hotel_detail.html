@@ -1,0 +1,11 @@
+{% extends "establishments/establishment_detail.html" %}
+
+{% block establishment_name %}
+<h1> Hotel: {{ name }} </h1>
+{% endblock %}
+
+{% block specific_infos %}
+<h3> Stars: {{price_range}} </h3>
+<h3> Rooms_number: {{banquet_capacity}} </h3>
+<h3> Price range: {{take_away}} </h3>
+ {% endblock %}

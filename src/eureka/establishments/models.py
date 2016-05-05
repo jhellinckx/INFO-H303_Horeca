@@ -23,7 +23,7 @@ class Establishment(models.Model):
 class Bar(models.Model):
     smoking = models.BooleanField()
     snack = models.BooleanField()
-    establishment = models.ForeignKey(Establishment, primary_key=True)
+    establishment = models.OneToOneField(Establishment, primary_key=True)
 
     class Meta:
         managed = False
@@ -33,7 +33,7 @@ class Hotel(models.Model):
     stars = models.SmallIntegerField()
     rooms_number = models.IntegerField()
     price_range = models.DecimalField(max_digits=6, decimal_places=2)
-    establishment = models.ForeignKey(Establishment, primary_key=True)
+    establishment = models.OneToOneField(Establishment, primary_key=True)
 
     class Meta:
         managed = False
@@ -45,7 +45,7 @@ class Restaurant(models.Model):
     banquet_capacity = models.IntegerField()
     take_away = models.BooleanField()
     delivery = models.BooleanField()
-    establishment = models.ForeignKey(Establishment, primary_key=True)
+    establishment = models.OneToOneField(Establishment, primary_key=True)
 
     class Meta:
         managed = False
