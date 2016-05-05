@@ -1,0 +1,32 @@
+<h1> Bar: {{ name }} </h1>
+
+<h2> Tel: {{ phone_number }} <h2>
+
+{% if website %}
+<h2> Website : <a href=http://{{website}}>{{ website }} </a></h2>
+{% endif %}
+
+<h3> Address: </h3>
+<ul>
+	<li> Street: {{ address_street }} </li>
+	<li> Number: {{ address_number }} </li>
+	<li> Post code: {{ address_postcode }} </li>
+	<li> Locality: {{ address_locality }} </li>
+	<li> Longitude: {{ gps_longitude }} </li>
+	<li> Latitude: {{ gps_latitude }} </li>
+</ul>
+
+<h3> Comments: </h3>
+{% if comments_list %}
+	<ul>
+	{% for comment in comments_list %}
+		<li> comment.score </li>
+	{% endfor %}
+	</ul>
+{% endif %}
+
+
+<h3> Smoking : {{smoking}} </h3>
+<h3> Snack : {{snack}} </h3>
+
+Created by: {{ creator_name}}, on {{ created_time}}.

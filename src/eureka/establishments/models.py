@@ -23,7 +23,7 @@ class Establishment(models.Model):
 class Bar(models.Model):
     smoking = models.BooleanField()
     snack = models.BooleanField()
-    establishment = models.ForeignKey('Establishment', primary_key=True)
+    establishment = models.ForeignKey(Establishment, primary_key=True)
 
     class Meta:
         managed = False

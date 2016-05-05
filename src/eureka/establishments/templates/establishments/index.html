@@ -1,0 +1,34 @@
+<h1> All establishments in database: </h1>
+
+<h3> Bars: </h3>
+{% if all_bars_list %}
+    <ul>
+    {% for bar in all_bars_list %}
+        <li><a href="/establishments/bar/{{ bar.establishment.id }}/">{{ bar.establishment.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No bars are available.</p>
+{% endif %}
+
+<h3> Restaurants: </h3>
+{% if all_restaurants_list %}
+    <ul>
+    {% for restaurant in all_restaurants_list %}
+        <li><a href="/establishments/restaurant/{{ restaurant.establishment.id }}/">{{ restaurant.establishment.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No restaurants are available.</p>
+{% endif %}
+
+<h3> Hotels: </h3>
+{% if all_hotels_list %}
+    <ul>
+    {% for hotel in all_hotels_list %}
+        <li><a href="/establishments/hotel/{{ hotel.establishment.id }}/">{{ hotel.establishment.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No hotels are available.</p>
+{% endif %}
