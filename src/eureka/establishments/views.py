@@ -131,3 +131,7 @@ def results(request):
 		form = searchForm()
 	context['form'] = form
 	return render(request, 'establishments/index.html', context)
+
+def tagsFilter(search_restaurants_list, search_bars_list, search_hotels_list, tags):
+	#TODO
+	return

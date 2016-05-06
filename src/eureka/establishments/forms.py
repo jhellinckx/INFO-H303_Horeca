@@ -7,10 +7,11 @@ class searchForm(forms.Form):
             ("bars", "Bars"),
             ("hotels", "Hotels"),
             )
-	"""all_tags = Tag.objects.raw('SELECT * FROM "Tag";')
-	TAG_OPTIONS = (
-		(all_tags[0].name, all_tags[0].name),
-		)"""
+	all_tags = Tag.objects.raw('SELECT * FROM "Tag";')
+	
+	TAG_OPTIONS = ()
+	for tag in all_tags:
+		TAG_OPTIONS = TAG_OPTIONS + ((tag.name, tag.name),)
 	establishments = forms.MultipleChoiceField(required = False, label= 'Establishments', widget=forms.CheckboxSelectMultiple, choices=EST_OPTIONS, initial=[c[0] for c in EST_OPTIONS])
-	#tags = forms.MultipleChoiceField(required = False, label= 'Tags', widget=forms.CheckboxSelectMultiple, choices=TAG_OPTIONS)
+	tags = forms.MultipleChoiceField(required = False, label= 'Tags', widget=forms.CheckboxSelectMultiple, choices=TAG_OPTIONS)
 	name = forms.CharField(required = False, label='Name', max_length=100)
