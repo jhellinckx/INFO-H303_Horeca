@@ -1,16 +1,27 @@
 from django.shortcuts import render
-from django.http import HttpResponse,Http404
+from django.http import HttpResponse,Http404, HttpResponseRedirect
 from .models import *
 from comments.models import Establishmentcomment
 from tags.models import *
 from django.db import connection
 from users.models import User
+from .forms import *
 
-def index(request):
+def index(request, context={}):
 	all_restaurants_list = Restaurant.objects.raw('SELECT * FROM "Restaurant";')
 	all_bars_list = Bar.objects.raw('SELECT * FROM "Bar";')
 	all_hotels_list = Hotel.objects.raw('SELECT * FROM "Hotel";')
 	context = {'all_restaurants_list': all_restaurants_list, 'all_bars_list': all_bars_list, 'all_hotels_list': all_hotels_list}
+	#search(request, context)      I don't know why but it doesn't let meput it in another method
+	if 'name' in request.GET:
+		form = searchForm(request.GET)
+		if form.is_valid():
+			name_field = form.cleaned_data['name']
+			name_field = '%'+name_field+'%'
+			return search_results(request,name_field)
+	else:
+		form = searchForm()
+	context['form'] = form
 	return render(request, 'establishments/index.html', context)
 
 
@@ -22,7 +33,7 @@ def restaurant_detail(request, establishment_id):
 		context["banquet_capacity"] = restaurant.banquet_capacity
 		context["take_away"] = "Yes" if restaurant.take_away else "No"
 		context["delivery"] = "Yes" if restaurant.delivery else "No"
-	except IndexError:  #if no restaurant is returned due to manaly input url
+	except IndexError:  #if no restaurant is returned due to manualy input url
 		raise Http404("Establishment does not exist")
 	return render(request, 'establishments/restaurant_detail.html', context)
 
@@ -93,3 +104,11 @@ def getTagsContext(context, establishment_id): #same as getCommentsContext
 	if len(tags_list) != 0 and len(tags_score) != 0:
 		context['tags_list'] = tags_list
 		context['tags_score'] = tags_score
+
+
+def search_results(request, name_field):
+	search_restaurants_list = Restaurant.objects.raw('SELECT * FROM "Restaurant" JOIN "Establishment" ON "Restaurant".establishment_id = "Establishment".id WHERE "Establishment".name LIKE %s;', [name_field])
+	search_bars_list = Bar.objects.raw('SELECT * FROM "Bar" JOIN "Establishment" ON "Bar".establishment_id = "Establishment".id WHERE "Establishment".name LIKE %s;', [name_field])
+	search_hotels_list = Hotel.objects.raw('SELECT * FROM "Hotel" JOIN "Establishment" ON "Hotel".establishment_id = "Establishment".id WHERE "Establishment".name LIKE %s;', [name_field])
+	context = {'all_restaurants_list': search_restaurants_list, 'all_bars_list': search_bars_list, 'all_hotels_list': search_hotels_list}
+	return render(request, 'establishments/index.html', context)

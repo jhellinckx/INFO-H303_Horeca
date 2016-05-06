@@ -1,5 +1,13 @@
 <h1> All establishments in database: </h1>
 
+{% if form %}
+<h3> Search: </h3>
+<form action="." method="get">
+    {{ form }}
+    <input type="submit" value="Submit" />
+</form>
+{% endif %}
+
 <h3> Bars: </h3>
 {% if all_bars_list %}
     <ul>
