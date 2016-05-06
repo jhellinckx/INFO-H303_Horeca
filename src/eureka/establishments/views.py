@@ -18,7 +18,8 @@ def index(request, context={}):
 		if form.is_valid():
 			name_field = form.cleaned_data['name']
 			name_field = '%'+name_field+'%'
-			return search_results(request,name_field)
+			establishments = form.cleaned_data['establishments']
+			return search_results(request,name_field, establishments)
 	else:
 		form = searchForm()
 	context['form'] = form
@@ -106,9 +107,27 @@ def getTagsContext(context, establishment_id): #same as getCommentsContext
 		context['tags_score'] = tags_score
 
 
-def search_results(request, name_field):
-	search_restaurants_list = Restaurant.objects.raw('SELECT * FROM "Restaurant" JOIN "Establishment" ON "Restaurant".establishment_id = "Establishment".id WHERE "Establishment".name LIKE %s;', [name_field])
-	search_bars_list = Bar.objects.raw('SELECT * FROM "Bar" JOIN "Establishment" ON "Bar".establishment_id = "Establishment".id WHERE "Establishment".name LIKE %s;', [name_field])
-	search_hotels_list = Hotel.objects.raw('SELECT * FROM "Hotel" JOIN "Establishment" ON "Hotel".establishment_id = "Establishment".id WHERE "Establishment".name LIKE %s;', [name_field])
+def search_results(request, name_field, establishments):
+	search_restaurants_list, search_bars_list, search_hotels_list = {}, {}, {}
+	if 'restaurants' in establishments:
+		search_restaurants_list = Restaurant.objects.raw('SELECT * FROM "Restaurant" JOIN "Establishment" ON "Restaurant".establishment_id = "Establishment".id WHERE "Establishment".name LIKE %s;', [name_field])
+	if 'bars' in establishments:
+		search_bars_list = Bar.objects.raw('SELECT * FROM "Bar" JOIN "Establishment" ON "Bar".establishment_id = "Establishment".id WHERE "Establishment".name LIKE %s;', [name_field])
+	if 'hotels' in establishments:
+		search_hotels_list = Hotel.objects.raw('SELECT * FROM "Hotel" JOIN "Establishment" ON "Hotel".establishment_id = "Establishment".id WHERE "Establishment".name LIKE %s;', [name_field])
 	context = {'all_restaurants_list': search_restaurants_list, 'all_bars_list': search_bars_list, 'all_hotels_list': search_hotels_list}
+	return render(request, 'establishments/index.html', context)
+
+
+def results(request):
+	if 'name' or 'establishments' in request.GET:
+		form = searchForm(request.GET)
+		if form.is_valid():
+			name_field = form.cleaned_data['name']
+			name_field = '%'+name_field+'%'
+			establishments = form.cleaned_data['establishments']
+			return search_results(request,name_field, establishments)
+	else:
+		form = searchForm()
+	context['form'] = form
 	return render(request, 'establishments/index.html', context)

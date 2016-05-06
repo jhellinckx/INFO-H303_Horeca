@@ -2,7 +2,7 @@
 
 {% if form %}
 <h3> Search: </h3>
-<form action="." method="get">
+<form action="/establishments/search/" method="get">
     {{ form }}
     <input type="submit" value="Submit" />
 </form>
@@ -15,8 +15,6 @@
         <li><a href="/establishments/bar/{{ bar.establishment.id }}/">{{ bar.establishment.name }}</a></li>
     {% endfor %}
     </ul>
-{% else %}
-    <p>No bars are available.</p>
 {% endif %}
 
 <h3> Restaurants: </h3>
@@ -26,8 +24,6 @@
         <li><a href="/establishments/restaurant/{{ restaurant.establishment.id }}/">{{ restaurant.establishment.name }}</a></li>
     {% endfor %}
     </ul>
-{% else %}
-    <p>No restaurants are available.</p>
 {% endif %}
 
 <h3> Hotels: </h3>
@@ -37,6 +33,4 @@
         <li><a href="/establishments/hotel/{{ hotel.establishment.id }}/">{{ hotel.establishment.name }}</a></li>
     {% endfor %}
     </ul>
-{% else %}
-    <p>No hotels are available.</p>
 {% endif %}
