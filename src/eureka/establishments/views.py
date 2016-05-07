@@ -124,7 +124,7 @@ def search_results(request, name_field, establishments, tags): #For tags, return
 		search_bars_list = list(set(Bar.objects.raw(sqlQueryBar, [name_field])))
 	if 'hotels' in establishments:
 		search_hotels_list = list(set(Hotel.objects.raw(sqlQueryHotel, [name_field])))
-	context = {'all_restaurants_list': search_restaurants_list, 'all_bars_list': search_bars_list, 'all_hotels_list': search_hotels_list}
+	context = {'all_restaurants_list': search_restaurants_list, 'all_bars_list': search_bars_list, 'all_hotels_list': search_hotels_list, 'title': 'Search results:'}
 	return render(request, 'establishments/index.html', context)
 
 
@@ -159,3 +159,20 @@ def modifySqlQueryForTags(sqlQuery, tags):
 	sqlQuery += ';'
 	return sqlQuery
 
+def addTest(request):
+	# if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = HotelForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            return HttpResponse('/thanks/')
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = HotelForm()
+
+    return render(request, 'establishments/addTest.html', {'form': form})

@@ -1,4 +1,8 @@
-<h1> All establishments in database: </h1>
+{% if title %}
+    <h1> {{ title }} </h1>
+{% else %}
+    <h1> All establishments in database: </h1>
+{% endif %}
 
 {% if form %}
 <h3> Search: </h3>
