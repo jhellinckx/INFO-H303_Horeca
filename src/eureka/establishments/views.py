@@ -7,22 +7,12 @@ from django.db import connection
 from users.models import User
 from .forms import *
 
-def index(request, context={}):
+def index(request):
 	all_restaurants_list = Restaurant.objects.raw('SELECT * FROM "Restaurant";')
 	all_bars_list = Bar.objects.raw('SELECT * FROM "Bar";')
 	all_hotels_list = Hotel.objects.raw('SELECT * FROM "Hotel";')
 	context = {'all_restaurants_list': all_restaurants_list, 'all_bars_list': all_bars_list, 'all_hotels_list': all_hotels_list}
-	#search(request, context)      I don't know why but it doesn't let meput it in another method
-	if 'name' in request.GET:
-		form = searchForm(request.GET)
-		if form.is_valid():
-			name_field = form.cleaned_data['name']
-			name_field = '%'+name_field+'%'
-			establishments = form.cleaned_data['establishments']
-			return search_results(request,name_field, establishments)
-	else:
-		form = searchForm()
-	context['form'] = form
+	addSearchForm(request, context)
 	return render(request, 'establishments/index.html', context)
 
 
@@ -106,32 +96,66 @@ def getTagsContext(context, establishment_id): #same as getCommentsContext
 		context['tags_list'] = tags_list
 		context['tags_score'] = tags_score
 
-
-def search_results(request, name_field, establishments):
-	search_restaurants_list, search_bars_list, search_hotels_list = {}, {}, {}
-	if 'restaurants' in establishments:
-		search_restaurants_list = Restaurant.objects.raw('SELECT * FROM "Restaurant" JOIN "Establishment" ON "Restaurant".establishment_id = "Establishment".id WHERE "Establishment".name LIKE %s;', [name_field])
-	if 'bars' in establishments:
-		search_bars_list = Bar.objects.raw('SELECT * FROM "Bar" JOIN "Establishment" ON "Bar".establishment_id = "Establishment".id WHERE "Establishment".name LIKE %s;', [name_field])
-	if 'hotels' in establishments:
-		search_hotels_list = Hotel.objects.raw('SELECT * FROM "Hotel" JOIN "Establishment" ON "Hotel".establishment_id = "Establishment".id WHERE "Establishment".name LIKE %s;', [name_field])
-	context = {'all_restaurants_list': search_restaurants_list, 'all_bars_list': search_bars_list, 'all_hotels_list': search_hotels_list}
-	return render(request, 'establishments/index.html', context)
-
-
-def results(request):
-	if 'name' or 'establishments' in request.GET:
+def addSearchForm(request, context):
+	if 'name' in request.GET:
 		form = searchForm(request.GET)
 		if form.is_valid():
 			name_field = form.cleaned_data['name']
 			name_field = '%'+name_field+'%'
 			establishments = form.cleaned_data['establishments']
-			return search_results(request,name_field, establishments)
+			tags = form.cleaned_data['tags']
+			return search_results(request,name_field, establishments, tags)
+	else:
+		form = searchForm()
+	context['form'] = form
+
+def search_results(request, name_field, establishments, tags): #For tags, return establishments who got at least one of the selected tags
+	search_restaurants_list, search_bars_list, search_hotels_list = {}, {}, {}
+	sqlQueryRestaurant = 'SELECT * FROM "Restaurant" JOIN "Establishment" ON "Restaurant".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Restaurant".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
+	sqlQueryBar = 'SELECT * FROM "Bar" JOIN "Establishment" ON "Bar".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Bar".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
+	sqlQueryHotel = 'SELECT * FROM "Hotel" JOIN "Establishment" ON "Hotel".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Hotel".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
+	if len(tags) != 0:
+		sqlQueryRestaurant = modifySqlQueryForTags(sqlQueryRestaurant, tags)
+		sqlQueryBar = modifySqlQueryForTags(sqlQueryBar, tags)
+		sqlQueryHotel = modifySqlQueryForTags(sqlQueryHotel, tags)
+	if 'restaurants' in establishments:
+		search_restaurants_list = list(set(Restaurant.objects.raw(sqlQueryRestaurant, [name_field])))
+	if 'bars' in establishments:
+		search_bars_list = list(set(Bar.objects.raw(sqlQueryBar, [name_field])))
+	if 'hotels' in establishments:
+		search_hotels_list = list(set(Hotel.objects.raw(sqlQueryHotel, [name_field])))
+	context = {'all_restaurants_list': search_restaurants_list, 'all_bars_list': search_bars_list, 'all_hotels_list': search_hotels_list}
+	return render(request, 'establishments/index.html', context)
+
+
+def results(request):
+	if 'name' or 'establishments' or 'tags' in request.GET:
+		form = searchForm(request.GET)
+		if form.is_valid():
+			name_field = form.cleaned_data['name']
+			name_field = '%'+name_field+'%'
+			establishments = form.cleaned_data['establishments']
+			tags = form.cleaned_data['tags']
+			return search_results(request,name_field, establishments, tags)
 	else:
 		form = searchForm()
 	context['form'] = form
 	return render(request, 'establishments/index.html', context)
 
-def tagsFilter(search_restaurants_list, search_bars_list, search_hotels_list, tags):
-	#TODO
-	return
+def getSqlQueryFromList(givenList, sqlQuery):
+	i=0
+	for element in givenList:
+		if i != 0:
+			sqlQuery += ', '
+		sqlQuery += "'"+element+"'"
+		i+=1
+	sqlQuery+=')'
+	return sqlQuery
+	
+def modifySqlQueryForTags(sqlQuery, tags):
+	sqlQuery = sqlQuery[:len(sqlQuery)-1]
+	sqlQuery += ' AND "EstablishmentTags".tag_name IN ('
+	sqlQuery = getSqlQueryFromList(tags, sqlQuery)
+	sqlQuery += ';'
+	return sqlQuery
+
