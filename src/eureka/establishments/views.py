@@ -163,16 +163,15 @@ def addTest(request):
 	# if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        form = HotelForm(request.POST)
+        form = EstablishmentForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
-            return HttpResponse('/thanks/')
+            # We will call the INSERT sql method here to add infos to the DB
+            return HttpResponse("Fine")
 
     # if a GET (or any other method) we'll create a blank form
     else:
-        form = HotelForm()
+        form = EstablishmentForm()
 
     return render(request, 'establishments/addTest.html', {'form': form})

@@ -17,15 +17,22 @@ class searchForm(forms.Form):
 	tags = forms.MultipleChoiceField(required = False, label= 'Tags', widget=forms.CheckboxSelectMultiple, choices=TAG_OPTIONS)
 	name = forms.CharField(required = False, label='Name', max_length=100)
 
-class EstablishmentForm(forms.ModelForm):
-	class Meta:
-		model = Establishment
-		fields = ['name', 'address_street', 'address_number','address_postcode','address_locality', 'gps_longitude', 'gps_latitude', 'phone_number', 'website']
+class EstablishmentForm(forms.Form):
+	name = forms.CharField(max_length=16, label="Name")
+	address_street = forms.CharField(max_length=64, label= "Street")
+	address_number = forms.IntegerField(label="Number")
+	address_postcode = forms.IntegerField(label="Postcode")
+	address_locality = forms.CharField(max_length=32, label="Locality")
+	gps_longitude = forms.DecimalField(max_digits=12, decimal_places=8, label="Longitude")
+	gps_latitude = forms.DecimalField(max_digits=12, decimal_places=8, label="Latitude")
+	phone_number = forms.CharField(max_length=16, label="Phone number")
+	website = forms.URLField(max_length=255, required=False, label="Website")
 
 class HotelForm(EstablishmentForm):
 	stars = forms.IntegerField(required=True, label= "Stars")
 	rooms_number = forms.IntegerField(required = True, label = "Rooms number")
 	price_range = forms.DecimalField(required = True, label = "Price range", max_digits=6, decimal_places=2)
+
 
 class BarForm(EstablishmentForm):
 	smoking = forms.BooleanField(required=True, label="Smoking")
