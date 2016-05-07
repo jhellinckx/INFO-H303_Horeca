@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse,Http404, HttpResponseRedirect
 from .models import *
 from comments.models import Establishmentcomment
+from comments.forms import EstablishmentCommentForm
 from tags.models import *
 from django.db import connection
 from users.models import User
@@ -34,6 +35,7 @@ def bar_detail(request, establishment_id):
 		context = getEstablishmentContext(bar, establishment_id)
 		context['smoking'] = "Yes" if bar.smoking  else "No"
 		context['snack'] = "Yes" if bar.snack else "No"
+		addCommentForm(request, context)
 	except IndexError:  #if no bar is returned due to manaly input url
 		raise Http404("Establishment does not exist")
 	return render(request, 'establishments/bar_detail.html', context)
@@ -109,6 +111,15 @@ def addSearchForm(request, context):
 		form = searchForm()
 	context['form'] = form
 
+def addCommentForm(request, context):
+	if request.method == 'POST':
+		form = EstablishmentCommentForm(request.POST)
+		if form.is_valid():
+			return HttpResponse("Fine")
+	else:
+		form = EstablishmentCommentForm()
+	context['add_comment_form'] = form
+
 def search_results(request, name_field, establishments, tags): #For tags, return establishments who got at least one of the selected tags
 	search_restaurants_list, search_bars_list, search_hotels_list = {}, {}, {}
 	sqlQueryRestaurant = 'SELECT * FROM "Restaurant" JOIN "Establishment" ON "Restaurant".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Restaurant".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
@@ -163,7 +174,7 @@ def addTest(request):
 	# if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        form = EstablishmentForm(request.POST)
+        form = HotelForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required
@@ -172,6 +183,6 @@ def addTest(request):
 
     # if a GET (or any other method) we'll create a blank form
     else:
-        form = EstablishmentForm()
+        form = HotelForm()
 
     return render(request, 'establishments/addTest.html', {'form': form})
