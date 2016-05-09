@@ -5,6 +5,16 @@
 {% endblock %}
 
 {% block specific_infos %}
+<h3> Closures: </h3>
+{% if closures %}
+	<ul>
+    {% for closure in closures %}
+        <li>{{ closure.day }} --  AM: {{ closure.am }}, PM: {{ closure.pm }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+	None. This restaurant is always open!
+{% endif %}
 <h3> Price range: {{price_range}} </h3>
 <h3> Banquet capacity: {{banquet_capacity}} </h3>
 <h3> Take Away: {{take_away}} </h3>

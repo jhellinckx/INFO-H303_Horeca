@@ -22,6 +22,7 @@ def restaurant_detail(request, establishment_id):
 	try:
 		restaurant = Restaurant.objects.raw('SELECT * FROM "Restaurant" WHERE establishment_id = %s;' , [establishment_id])[0]
 		context = getEstablishmentContext(restaurant, establishment_id)
+		getRestaurantClosuresContext(context, establishment_id)
 		context["price_range"] = restaurant.price_range
 		context["banquet_capacity"] = restaurant.banquet_capacity
 		context["take_away"] = "Yes" if restaurant.take_away else "No"
@@ -98,6 +99,15 @@ def getTagsContext(context, establishment_id): #same as getCommentsContext
 	if len(tags_list) != 0 and len(tags_score) != 0:
 		context['tags_list'] = tags_list
 		context['tags_score'] = tags_score
+
+def getRestaurantClosuresContext(context, establishment_id):
+	closures = []
+	with connection.cursor() as cursor:
+		cursor.execute('SELECT day, am, pm, establishment_id FROM "RestaurantClosures" WHERE establishment_id = %s', [establishment_id])
+		for row in cursor.fetchall():
+			closures.append(Restaurantclosures(day=row[0], am=row[1], pm=row[2], establishment=Establishment.objects.get(id=row[3])))
+	if len(closures) != 0:
+		context['closures'] = closures
 
 def addSearchForm(request, context):
 	if 'name' in request.GET:
