@@ -79,7 +79,7 @@ def getAverageScoreEstablishmentContext(context, establishment_id):
 		cursor.execute('SELECT avg(score) FROM "EstablishmentComment" WHERE establishment_id = %s', [establishment_id])
 		row = cursor.fetchone()
 		averageScore = row[0]
-	if averageScore != -1:
+	if averageScore != -1 and averageScore != None:
 		context['average_score'] = "{0:.2f}".format(averageScore)
 
 def getTagsContext(context, establishment_id): #same as getCommentsContext

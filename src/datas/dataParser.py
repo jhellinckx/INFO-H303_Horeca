@@ -9,6 +9,8 @@ ADMINS = []
 USERS = []
 TAGS = []
 
+DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
 def parseCafes():
 	tree = ET.parse('Cafes.xml')
 	Cafes = tree.getroot()
@@ -104,7 +106,7 @@ def parseRestaurantClosures(restaurant, establishment_id):
 			day_am = False #means it is only closed for PM (so AM = False)
 		elif day.get("hour") == "am":
 			day_pm = False
-		DB.insertRestaurantClosures(establishment_id, day.get("day"), day_am, day_pm)
+		DB.insertRestaurantClosures(establishment_id, DAY_NAMES[int(day.get("day"))], day_am, day_pm)
 
 def stringToDateFormat(dateString):
 	dateString = dateString.split("/")
