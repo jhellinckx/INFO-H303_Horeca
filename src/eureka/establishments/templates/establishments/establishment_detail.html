@@ -41,6 +41,14 @@
 	</ul>
 {% endif %}
 
+{% if add_comment_form %}
+<h3> Add a comment: </h3>
+<form action="/comment/" method="post">
+    {{ add_comment_form }}
+    <input type="submit" value="Submit" />
+</form>
+{% endif %}
+
 {% block specific_infos %}
 LoL
 {% endblock %}

@@ -4,6 +4,7 @@ from .models import *
 from comments.models import Establishmentcomment
 from comments.forms import EstablishmentCommentForm
 from tags.models import *
+from tags.forms import *
 from django.db import connection
 from users.models import User
 from .forms import *
@@ -122,9 +123,9 @@ def addCommentForm(request, context):
 
 def search_results(request, name_field, establishments, tags): #For tags, return establishments who got at least one of the selected tags
 	search_restaurants_list, search_bars_list, search_hotels_list = {}, {}, {}
-	sqlQueryRestaurant = 'SELECT * FROM "Restaurant" JOIN "Establishment" ON "Restaurant".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Restaurant".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
-	sqlQueryBar = 'SELECT * FROM "Bar" JOIN "Establishment" ON "Bar".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Bar".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
-	sqlQueryHotel = 'SELECT * FROM "Hotel" JOIN "Establishment" ON "Hotel".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Hotel".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
+	sqlQueryRestaurant = 'SELECT DISTINCT * FROM "Restaurant" JOIN "Establishment" ON "Restaurant".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Restaurant".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
+	sqlQueryBar = 'SELECT DISTINCT * FROM "Bar" JOIN "Establishment" ON "Bar".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Bar".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
+	sqlQueryHotel = 'SELECT DISTINCT * FROM "Hotel" JOIN "Establishment" ON "Hotel".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Hotel".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
 	if len(tags) != 0:
 		sqlQueryRestaurant = modifySqlQueryForTags(sqlQueryRestaurant, tags)
 		sqlQueryBar = modifySqlQueryForTags(sqlQueryBar, tags)

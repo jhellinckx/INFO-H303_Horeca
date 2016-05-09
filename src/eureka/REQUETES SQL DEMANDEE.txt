@@ -1,0 +1,37 @@
+REQUETES SQL DEMANDEE DANS L'ENONCE:
+
+(petite remarque, qd il sagit de retourner des établissements, ici je retourne uniquement les id des établissements demandés ds les requetes de l'énoncé, donc qd on affichera ca sur notre site, on fera pour Hotel Restaurant & Bar , par exemple pr Bar : Bar.objects.raw(SELECT * FROM "Bar" WHERE establishement_id IN [REQUETE SQL CI-DESSOUS] ) )
+
+R1:
+
+SELECT u.name FROM "User" u WHERE 3<= (SELECT count(ec2.user_name) FROM "EstablishmentComment" ec2 WHERE u.name = ec2.user_name AND ec2.score >= 4 AND ec2.establishment_id IN (SELECT DISTINCT e.id FROM "Establishment" e, "EstablishmentComment" ec WHERE e.id = ec.establishment_id AND ec.user_name = 'Brenda' and ec.score >= 4));
+
+-------------------------------------------------
+
+R2:
+
+SELECT e2.id FROM "Establishment" e2 WHERE EXISTS (SELECT * FROM "EstablishmentComment" ec4 WHERE e2.id = ec4.establishment_id AND ec4.score>=4 AND ec4.user_name IN (SELECT u.name FROM "User" u WHERE (SELECT count(ec3.user_name) FROM "EstablishmentComment" ec3 WHERE ec3.user_name = 'Brenda' and ec3.score >=4 ) = (SELECT count(ec2.user_name) FROM "EstablishmentComment" ec2 WHERE u.name = ec2.user_name AND ec2.score >= 4 AND ec2.establishment_id IN (SELECT DISTINCT e.id FROM "Establishment" e, "EstablishmentComment" ec WHERE e.id = ec.establishment_id AND ec.user_name = 'Brenda' and ec.score >= 4))));
+
+-------------------------------------------------
+
+R3:
+
+SELECT e.id FROM "Establishment" e WHERE (SELECT count(ec.establishment_id) FROM "EstablishmentComment" ec WHERE ec.establishment_id = e.id) <= 1;
+
+-------------------------------------------------
+
+R4:  #Trad: retourne les admin quiont au moins une fois créé un établissment mais dont il n'existe pas de commentaire de leur part sur cet établissement
+
+SELECT DISTINCT u.name FROM "User" u, "Establishment" e WHERE u.is_admin = 't' AND e.creator_name = u.name AND NOT EXISTS (SELECT * FROM "EstablishmentComment" ec WHERE ec.establishment_id = e.id AND ec.user_name = u.name);
+
+-------------------------------------------------
+
+R5:  #le premier FROM EstablishmentComment avec le where id = estab.._id c'est pour que le ORDER BY avg(ec.score) soit bien celui pour l'etablissement "courant" dans le select
+
+SELECT e.id FROM "Establishment" e, "EstablishmentComment" ec WHERE e.id = ec.establishment_id AND (SELECT count(ec2.establishment_id) FROM "EstablishmentComment" ec2 WHERE ec2.establishment_id = e.id) >= 3 GROUP BY (e.id) ORDER BY avg(ec.score) DESC;
+
+-------------------------------------------------
+
+R6: #TODO:faut trouver comment faire le group by encore 
+
+SELECT t.name from "Tag" t WHERE (SELECT count(et.tag_name) FROM "EstablishmentTags" et WHERE t.name = et.tag_name) >= 5;
