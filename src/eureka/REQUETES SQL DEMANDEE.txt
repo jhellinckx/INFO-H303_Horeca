@@ -14,7 +14,7 @@ SELECT e2.id FROM "Establishment" e2 WHERE EXISTS (SELECT * FROM "EstablishmentC
 
 -------------------------------------------------
 
-R3:
+R3: #Ici ne pas faire avec HAVING (ca fonctionne mais le HAVING ne prend pas en considération un establishmet s'il a 0 comment (donc si count = 0), alors qu'il demande les établissement qui ont au plus 1 commentaire, donc 0 est bon)
 
 SELECT e.id FROM "Establishment" e WHERE (SELECT count(ec.establishment_id) FROM "EstablishmentComment" ec WHERE ec.establishment_id = e.id) <= 1;
 
@@ -28,10 +28,10 @@ SELECT DISTINCT u.name FROM "User" u, "Establishment" e WHERE u.is_admin = 't' A
 
 R5:  #le premier FROM EstablishmentComment avec le where id = estab.._id c'est pour que le ORDER BY avg(ec.score) soit bien celui pour l'etablissement "courant" dans le select
 
-SELECT e.id FROM "Establishment" e, "EstablishmentComment" ec WHERE e.id = ec.establishment_id AND (SELECT count(ec2.establishment_id) FROM "EstablishmentComment" ec2 WHERE ec2.establishment_id = e.id) >= 3 GROUP BY (e.id) ORDER BY avg(ec.score) DESC;
+SELECT e.id FROM "Establishment" e, "EstablishmentComment" ec WHERE e.id = ec.establishment_id GROUP BY (e.id) HAVING count(ec.establishment_id) >= 3 ORDER BY avg(ec.score) DESC;
 
 -------------------------------------------------
 
 R6: #TODO:faut trouver comment faire le group by encore 
 
-SELECT t.name from "Tag" t WHERE (SELECT count(et.tag_name) FROM "EstablishmentTags" et WHERE t.name = et.tag_name) >= 5;
+SELECT t.name from "Tag" t WHERE (SELECT DISTINCT count(et.tag_name) FROM "EstablishmentTags" et WHERE t.name = et.tag_name) >= 5;
