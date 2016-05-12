@@ -1,22 +1,20 @@
-from django.db import models
 from django.db import connection
-from django.contrib.auth.hashers import check_password
-from django.contrib.auth.models import (
-	BaseUserManager, AbstractBaseUser
-)
+from common.models import BaseDBManager
 
-class EurekaUserManager(BaseUserManager):
+class UserDBManager(BaseDBManager):
+	def get_all(self):
+		with connection.cursor() as c:
+			c.execute('SELECT * FROM "User"')
+			return [User.from_db(d) for d in self.fetch_dicts(c)]
+
+	def get(self, username):
+		pass
+
+
 	def create_user(self, name, email, password, signup_date, is_admin=False):
 		check_required(name, email, password, signup_date)
 
-		user = self.model(
-			email=self.normalize_email(email),
-			signup_date=signup_date,
-			is_admin=False,
-		)
-		user.set_password(password)
-
-		return user
+		
 
 	def check_required(self, name, email, password, signup_date):
 		if not name:
@@ -28,36 +26,31 @@ class EurekaUserManager(BaseUserManager):
 		if not signup_date:
 			raise ValueError("Users must have a signup date")
 
-	def raw_get(self, username):
-		try:
-			return raw("SELECT * FROM User WHERE name = %s;", [username])[0]
-		except IndexError :
-			return None
+
+class User(object):
+
+	db = UserDBManager()
+
+	def __init__(self, name, email, password, signup_date, is_admin):	
+		self.name = name
+		self.email = email
+		self.password = password
+		self.signup_date = signup_date
+		self.is_admin = is_admin
+
+	@classmethod
+	def from_db(cls, db_dict):
+		return cls(db_dict["name"], db_dict["email"], db_dict["password"], \
+			db_dict["signup_date"], db_dict["is_admin"])
 
 
-class EurekaUser(AbstractBaseUser):
-	name = models.CharField(primary_key=True, max_length=16)
-	email = models.EmailField(unique=True, max_length=255)
-	signup_date = models.DateTimeField()
-	is_admin = models.BooleanField()
-	
-	class Meta:
-		managed = False
-		db_table = 'User'
-	
-	objects = EurekaUserManager()
-	
-	USERNAME_FIELD = "name"
-	
-	def get_full_name(self):
-		return name
-	
-	def get_short_name(self):
-		return name
-	
-	def __str__(self):
-		return name
 
-class EurekaAuthBackend(object):
-	def authenticate(self, username=None, password=None):
-		user = EurekaUser.objects.raw_get(username)
+
+
+
+
+
+
+
+
+
