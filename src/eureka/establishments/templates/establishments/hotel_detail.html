@@ -4,6 +4,16 @@
 <h1> Hotel: {{ establishment.name }} </h1>
 {% endblock %}
 
+
+{% block admin_manip %}
+	{% if user and user.is_admin %}
+		<ul>
+			<li><a href="/admin/edit_hotel/{{ establishment.establishment_id }}">Edit</a></li>
+			<li><a href="/admin/delete_hotel/{{ establishment.establishment_id }}">Delete</a></li>
+		</ul>
+	{% endif %}
+{% endblock %}
+
 {% block specific_infos %}
 <h3> Stars: {{ establishment.stars }} </h3>
 <h3> Rooms_number: {{ establishment.rooms_number }} </h3>

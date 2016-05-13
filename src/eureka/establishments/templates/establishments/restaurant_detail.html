@@ -4,6 +4,15 @@
 <h1> Restaurant: {{ establishment.name }} </h1>
 {% endblock %}
 
+{% block admin_manip %}
+	{% if user and user.is_admin %}
+		<ul>
+			<li><a href="/admin/edit_restaurant/{{ establishment.establishment_id }}">Edit</a></li>
+			<li><a href="/admin/delete_restaurant/{{ establishment.establishment_id }}">Delete</a></li>
+		</ul>
+	{% endif %}
+{% endblock %}
+
 {% block specific_infos %}
 <h3> Closures: </h3>
 {% if closures %}

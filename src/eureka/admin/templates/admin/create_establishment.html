@@ -49,6 +49,8 @@
 	{% endblock %}
 	</table>
 
-	<input type="submit" value="create" />
+	{% block specific_input %}
+		<input type="submit" value="create" />
+	{% endblock %}
 	</form>
 {% endblock %}

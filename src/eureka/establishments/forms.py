@@ -19,7 +19,7 @@ class SearchForm(forms.Form):
 	name = forms.CharField(required = False, label='Name', max_length=100)
 
 class EstablishmentForm(forms.Form):
-	name = forms.CharField(max_length=16, label="Name")
+	name = forms.CharField(max_length=64, label="Name")
 	address_street = forms.CharField(max_length=64, label= "Street")
 	address_number = forms.IntegerField(label="Number")
 	address_postcode = forms.IntegerField(label="Postcode")

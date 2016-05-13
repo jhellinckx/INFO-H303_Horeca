@@ -6,7 +6,7 @@ from login.views import *
 
 from establishments.forms import *
 from establishments.models import *
-from establishments.views import *
+#from establishments.views import *
 
 from login.forms import *
 from login.models import *
@@ -95,4 +95,93 @@ def create_user(request):
 	else:
 		context['form'] = RegisterForm()
 		return render(request, 'admin/create_user.html', context)
+
+
+def edit_restaurant(request, establishment_id):
+	(context, user, res) = check_admin(request)
+	if res : return res
+	if request.method == 'POST':
+		form = RestaurantForm(request.POST)
+		print form.errors
+		if form.is_valid():
+			success = Restaurant.db.edit_from_dict(form.cleaned_data, establishment_id)
+			if success :
+				return redirect("/establishments/restaurant/"+str(establishment_id))
+		form.add_error(None, "error")
+		context["form"] = form
+		context["establishment_id"] = establishment_id
+		return render(request, 'admin/edit_restaurant.html', context)
+	else:
+		restaurant = Restaurant.db.get_by_id(establishment_id)
+		context["establishment_id"] = establishment_id
+		db_dict = restaurant.get_dict()
+		if restaurant == None :
+			raise Http404("Restaurant does not exit")
+		form = RestaurantForm()
+		for field in form.fields:
+			form.initial[field] = db_dict[field]
+		context["form"] = form
+		return render(request, 'admin/edit_restaurant.html', context)
+
+def edit_bar(request, establishment_id):
+	(context, user, res) = check_admin(request)
+	if res : return res
+	if request.method == 'POST':
+		form = BarForm(request.POST)
+		print form.errors
+		if form.is_valid():
+			success = Bar.db.edit_from_dict(form.cleaned_data, establishment_id)
+			if success :
+				return redirect("/establishments/bar/"+str(establishment_id))
+		form.add_error(None, "error")
+		context["form"] = form
+		context["establishment_id"] = establishment_id
+		return render(request, 'admin/edit_bar.html', context)
+	else:
+		bar = Bar.db.get_by_id(establishment_id)
+		context["establishment_id"] = establishment_id
+		db_dict = bar.get_dict()
+		if bar == None :
+			raise Http404("Bar does not exit")
+		form = BarForm()
+		for field in form.fields:
+			form.initial[field] = db_dict[field]
+		context["form"] = form
+		return render(request, 'admin/edit_bar.html', context)
+
+def edit_hotel(request, establishment_id):
+	(context, user, res) = check_admin(request)
+	if res : return res
+	if request.method == 'POST':
+		form = HotelForm(request.POST)
+		print form.errors
+		if form.is_valid():
+			success = Hotel.db.edit_from_dict(form.cleaned_data, establishment_id)
+			if success :
+				return redirect("/establishments/hotel/"+str(establishment_id))
+		form.add_error(None, "error")
+		context["form"] = form
+		context["establishment_id"] = establishment_id
+		return render(request, 'admin/edit_hotel.html', context)
+	else:
+		hotel = Hotel.db.get_by_id(establishment_id)
+		context["establishment_id"] = establishment_id
+		db_dict = hotel.get_dict()
+		if hotel == None :
+			raise Http404("Hotel does not exit")
+		form = HotelForm()
+		for field in form.fields:
+			form.initial[field] = db_dict[field]
+		context["form"] = form
+		return render(request, 'admin/edit_hotel.html', context)
+
+def delete_restaurant(request, establishment_id):
+	pass
+
+def delete_bar(request, establishment_id):
+	pass
+
+def delete_hotel(request, establishment_id):
+	pass
+
 

@@ -39,6 +39,28 @@ class EstablishmentDBManager(BaseDBManager):
         except IntegrityError as e:
             return -1
 
+    def edit_establishment_from_dict(self, form_dict, establishment_id):
+        try:
+            with connection.cursor() as c:
+                c.execute('UPDATE "Establishment" SET name=%s, address_street=%s, address_number=%s, \
+                    address_postcode=%s, address_locality=%s, gps_longitude=%s, gps_latitude=%s,\
+                    phone_number=%s, website=%s WHERE id=%s;',
+                    [
+                        form_dict["name"],
+                        form_dict["address_street"],
+                        form_dict["address_number"],
+                        form_dict["address_postcode"],
+                        form_dict["address_locality"],
+                        form_dict["gps_longitude"],
+                        form_dict["gps_latitude"],
+                        form_dict["phone_number"],
+                        form_dict["website"],
+                        establishment_id
+                    ])
+        except IntegrityError as e:
+            return False
+        return True
+
     def model(self):
         raise NotImplementedError
 
@@ -66,6 +88,24 @@ class HotelDBManager(EstablishmentDBManager):
                 return (False, establishment_id)
         return (True, establishment_id)
 
+    def edit_from_dict(self, form_dict, establishment_id):
+        success = self.edit_establishment_from_dict(form_dict, establishment_id)
+        if not success :
+            return False
+        else:
+            try:
+                with connection.cursor() as c:
+                    c.execute('UPDATE "Hotel" SET stars=%s, rooms_number=%s, price_range=%s WHERE establishment_id=%s;',
+                        [
+                            form_dict["stars"],
+                            form_dict["rooms_number"],
+                            form_dict["price_range"],
+                            establishment_id
+                        ])
+            except IntegrityError as e:
+                return False
+        return True
+
 
 class BarDBManager(EstablishmentDBManager):
     def model(self):
@@ -89,6 +129,23 @@ class BarDBManager(EstablishmentDBManager):
                 return (False, establishment_id)
         return (True, establishment_id)
 
+    def edit_from_dict(self, form_dict, establishment_id):
+        success = self.edit_establishment_from_dict(form_dict, establishment_id)
+        if not success :
+            return False
+        else:
+            try:
+                with connection.cursor() as c:
+                    c.execute('UPDATE "Bar" SET smoking=%s, snack=%s WHERE establishment_id=%s;',
+                        [
+                            form_dict["smoking"],
+                            form_dict["snack"],
+                            establishment_id
+                        ])
+            except IntegrityError as e:
+                return False
+        return True
+
 class RestaurantDBManager(EstablishmentDBManager):
     def model(self):
         return Restaurant
@@ -99,10 +156,6 @@ class RestaurantDBManager(EstablishmentDBManager):
             return (False, establishment_id)
         else:
             try:
-                #print form_dict
-                #form_dict["delivery"] = str(int(form_dict["delivery"]))
-                #form_dict["take_away"] = str(int(form_dict["take_away"]))
-                #print form_dict
                 with connection.cursor() as c:
                     c.execute('INSERT INTO "Restaurant" (price_range, banquet_capacity, take_away, delivery, establishment_id)\
                         VALUES (%s, %s, %s, %s, %s);',
@@ -116,6 +169,27 @@ class RestaurantDBManager(EstablishmentDBManager):
             except IntegrityError as e:
                 return (False, establishment_id)
         return (True, establishment_id)
+
+    def edit_from_dict(self, form_dict, establishment_id):
+        success = self.edit_establishment_from_dict(form_dict, establishment_id)
+        if not success :
+            return False
+        else:
+            try:
+                with connection.cursor() as c:
+                    c.execute('UPDATE "Restaurant" SET price_range=%s, banquet_capacity=%s, take_away=%s, delivery=%s\
+                        WHERE establishment_id=%s;',
+                        [
+                            form_dict["price_range"],
+                            form_dict["banquet_capacity"],
+                            form_dict["take_away"],
+                            form_dict["delivery"],
+                            establishment_id
+                        ])
+            except IntegrityError as e:
+                return False
+        return True
+
 
 class Establishment(object):
 
@@ -139,17 +213,21 @@ class Hotel(Establishment):
     table = 'Hotel'
     db = HotelDBManager()
 
-    def __init__(self, establishment_id, stars, rooms_number, price_range):
+    def __init__(self, establishment_id, stars, rooms_number, price_range, db_dict):
         self.establishment_id = establishment_id
         self.stars = stars
         self.rooms_number = rooms_number
         self.price_range = price_range
+        self.db_dict = db_dict
 
     @classmethod
     def from_db(cls, db_dict):
-        hotel = cls(db_dict["establishment_id"], db_dict["stars"], db_dict["rooms_number"], db_dict["price_range"]) 
+        hotel = cls(db_dict["establishment_id"], db_dict["stars"], db_dict["rooms_number"], db_dict["price_range"], db_dict) 
         hotel.populate(db_dict)
         return hotel
+
+    def get_dict(self):
+        return self.db_dict
         
 
 
@@ -158,16 +236,20 @@ class Bar(Establishment):
     table = 'Bar'
     db = BarDBManager()
 
-    def __init__(self, establishment_id, smoking, snack):
+    def __init__(self, establishment_id, smoking, snack, db_dict):
         self.establishment_id = establishment_id
         self.smoking = smoking
         self.snack = snack
+        self.db_dict = db_dict
 
     @classmethod
     def from_db(cls, db_dict):
-        bar = cls(db_dict["establishment_id"], db_dict["smoking"], db_dict["snack"])
+        bar = cls(db_dict["establishment_id"], db_dict["smoking"], db_dict["snack"], db_dict)
         bar.populate(db_dict)
         return bar
+
+    def get_dict(self):
+        return self.db_dict
 
 
 class Restaurant(Establishment):
@@ -175,19 +257,23 @@ class Restaurant(Establishment):
     table = 'Restaurant'
     db = RestaurantDBManager()
 
-    def __init__(self, establishment_id, price_range, banquet_capacity, take_away, delivery):
+    def __init__(self, establishment_id, price_range, banquet_capacity, take_away, delivery, db_dict):
         self.establishment_id = establishment_id
         self.price_range = price_range
         self.banquet_capacity = banquet_capacity
         self.take_away = take_away
         self.delivery = delivery
+        self.db_dict = db_dict
 
     @classmethod
     def from_db(cls, db_dict):
         restaurant = cls(db_dict["establishment_id"], db_dict["price_range"], db_dict["banquet_capacity"], \
-            db_dict["take_away"], db_dict["delivery"])
+            db_dict["take_away"], db_dict["delivery"], db_dict)
         restaurant.populate(db_dict)
         return restaurant
+
+    def get_dict(self):
+        return self.db_dict
 
 
 class RestaurantClosuresDBManager(BaseDBManager):

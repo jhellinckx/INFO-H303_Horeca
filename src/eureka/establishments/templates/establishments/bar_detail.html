@@ -4,6 +4,16 @@
 <h1> Bar: {{ establishment.name }} </h1>
 {% endblock %}
 
+
+{% block admin_manip %}
+	{% if user and user.is_admin %}
+		<ul>
+			<li><a href="/admin/edit_bar/{{ establishment.establishment_id }}">Edit</a></li>
+			<li><a href="/admin/delete_bar/{{ establishment.establishment_id }}">Delete</a></li>
+		</ul>
+	{% endif %}
+{% endblock %}
+
 {% block specific_infos %}
 <h3> Smoking : {% if establishment.smoking %} yes {% else %} no {% endif %} </h3>
 <h3> Snack : {% if establishment.snack %} yes {% else %} no {% endif %} </h3>
