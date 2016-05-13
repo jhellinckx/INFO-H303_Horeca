@@ -9,6 +9,9 @@ from .forms import *
 def _login(request, user):
 	request.session["username"] = user.name
 
+def _logout(request):
+	request.session["username"] = None
+
 def get_user(request):
 	user = None
 	if request.session.has_key("username"):
@@ -41,6 +44,9 @@ def login(request):
 		return render(request, 'login/login.html', context)
 
 def register(request):
+	user = get_user(request)
+	if user != None:
+		return HttpResponse("Already logged in")
 	if request.method == 'POST':
 		form = RegisterForm(request.POST)
 		if form.is_valid():
@@ -63,3 +69,10 @@ def register(request):
 	else :
 		context = {"form" : RegisterForm()}
 		return render(request, 'login/register.html', context)
+
+def logout(request):
+	user = get_user(request)
+	if user == None:
+		return HttpResponse("Not logged in")
+	_logout(request)
+	return redirect("login.views.login")
