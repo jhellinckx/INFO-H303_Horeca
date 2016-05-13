@@ -20,7 +20,7 @@ CREATE TABLE "Establishment"(
 	creator_name VARCHAR(32) NOT NULL,
 	created_time DATE NOT NULL,
 	PRIMARY KEY(id),
-	FOREIGN KEY (creator_name) REFERENCES "User"(name) ON DELETE RESTRICT
+	FOREIGN KEY (creator_name) REFERENCES "User"(name) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE INDEX "creator_name" ON "Establishment"(creator_name);

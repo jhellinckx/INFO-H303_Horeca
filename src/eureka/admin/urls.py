@@ -19,6 +19,8 @@ urlpatterns = [
 	url(r'^delete_hotel/(?P<establishment_id>[0-9]+)/$', views.delete_hotel, name='delete_hotel'),
 
 	url(r'^create_user/', views.create_user, name="create_user"),
+	url(r'^edit_user/(?P<username>[\w.@+-]+)/$', views.edit_user, name="edit_user"),
+	url(r'^delete_user/(?P<username>[\w.@+-]+)/$', views.delete_user, name="delete_user"),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
