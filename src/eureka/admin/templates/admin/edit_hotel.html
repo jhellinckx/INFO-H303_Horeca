@@ -1,0 +1,9 @@
+{% extends 'admin/create_hotel.html' %}
+
+{% block specific_establishment_post %}
+	<form method="post" action="/admin/edit_hotel/{{ establishment_id }}/">
+{% endblock %}
+
+{% block specific_input %}
+	<input type="submit" value="edit" />
+{% endblock %}
