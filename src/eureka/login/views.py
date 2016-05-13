@@ -18,6 +18,9 @@ def get_user(request):
 		user = User.db.get(request.session["username"])
 	return user
 
+def user_context(request):
+	return {"user" : get_user(request)}
+
 def login(request):
 	user = get_user(request)
 	if user != None:
