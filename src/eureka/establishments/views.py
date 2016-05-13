@@ -21,9 +21,6 @@ def index(request):
 	return render(request, 'establishments/index.html', context)
 
 def getEstablishmentContext(context, request, establishment_id):
-	#context = {'name': specific_establishment.name, 'phone_number': specific_establishment.phone_number, 'address_street': specific_establishment.address_street, 'address_number': specific_establishment.address_number, 'address_postcode': specific_establishment.address_postcode, 'address_locality': specific_establishment.address_locality, 'gps_longitude': specific_establishment.gps_longitude, 'gps_latitude': specific_establishment.gps_latitude, 'creator_name': specific_establishment.creator_name, 'created_time': specific_establishment.created_time}
-	#if specific_establishment.website != "None":
-	#	context['website'] = specific_establishment.website
 	getTagsContext(context, establishment_id)
 	getCommentsContext(context, establishment_id)
 	getAverageScoreEstablishmentContext(context, establishment_id)

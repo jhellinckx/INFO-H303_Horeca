@@ -7,8 +7,11 @@ class UserDBManager(BaseDBManager):
 			c.execute('SELECT * FROM "User"')
 			return [User.from_db(d) for d in self.fetch_dicts(c)]
 
-	def get(self, username):
-		pass
+	def get(self, username, password):
+		with connection.cursor() as c:
+			c.execute('SELECT * FROM "User" WHERE name=%s AND password=%s', [username, password])
+			d = self.fetch_dict(c)
+			return User.from_db(d) if d != None else None
 
 
 	def create_user(self, name, email, password, signup_date, is_admin=False):
