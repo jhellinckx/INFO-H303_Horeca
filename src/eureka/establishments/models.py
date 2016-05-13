@@ -1,6 +1,7 @@
 from django.db import connection
 from common.models import BaseDBManager
-
+import time
+import psycopg2
 class EstablishmentDBManager(BaseDBManager):
 
     def get_all(self):
@@ -14,6 +15,30 @@ class EstablishmentDBManager(BaseDBManager):
             d = self.fetch_dict(c)
             return self.model().from_db(d) if d != None else None
 
+    def create_establishment_from_dict(self, form_dict, username):
+        created_time = time.strftime('%Y-%m-%d %H:%M:%S')
+        creator_name = username
+        try:
+            with connection.cursor() as c:
+                c.execute('INSERT INTO "Establishment" (name, address_street, address_number, address_postcode, address_locality, gps_longitude, gps_latitude, phone_number, website, creator_name, created_time) \
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id;',
+                    [
+                        form_dict["name"],
+                        form_dict["address_street"],
+                        form_dict["address_number"],
+                        form_dict["address_postcode"],
+                        form_dict["address_locality"],
+                        form_dict["gps_longitude"],
+                        form_dict["gps_latitude"],
+                        form_dict["phone_number"],
+                        form_dict["website"],
+                        creator_name,
+                        created_time
+                    ])
+                return c.fetchone()[0]
+        except psycopg2.IntegrityError as e:
+            return -1
+
     def model(self):
         raise NotImplementedError
 
@@ -22,14 +47,75 @@ class HotelDBManager(EstablishmentDBManager):
     def model(self):
         return Hotel
 
+    def create_from_dict(self, form_dict, username):
+        establishment_id = self.create_establishment_from_dict(form_dict, username)
+        if establishment_id == -1:
+            return (False, establishment_id)
+        else:
+            try:
+                with connection.cursor() as c:
+                    c.execute('INSERT INTO "Hotel" (stars, rooms_number, price_range, establishment_id)\
+                        VALUES (%s, %s, %s, %s);',
+                        [
+                            form_dict["stars"],
+                            form_dict["rooms_number"],
+                            form_dict["price_range"],
+                            establishment_id
+                        ])
+            except psycopg2.IntegrityError as e:
+                return (False, establishment_id)
+        return (True, establishment_id)
+
 
 class BarDBManager(EstablishmentDBManager):
     def model(self):
         return Bar
 
+    def create_from_dict(self, form_dict, username):
+        establishment_id = self.create_establishment_from_dict(form_dict, username)
+        if establishment_id == -1:
+            return (False, establishment_id)
+        else:
+            try:
+                with connection.cursor() as c:
+                    c.execute('INSERT INTO "Bar" (smoking, snack, establishment_id)\
+                        VALUES (%s, %s, %s);',
+                        [
+                            form_dict["smoking"],
+                            form_dict["snack"],
+                            establishment_id
+                        ])
+            except psycopg2.IntegrityError as e:
+                return (False, establishment_id)
+        return (True, establishment_id)
+
 class RestaurantDBManager(EstablishmentDBManager):
     def model(self):
         return Restaurant
+
+    def create_from_dict(self, form_dict, username):
+        establishment_id = self.create_establishment_from_dict(form_dict, username)
+        if establishment_id == -1:
+            return (False, establishment_id)
+        else:
+            try:
+                #print form_dict
+                #form_dict["delivery"] = str(int(form_dict["delivery"]))
+                #form_dict["take_away"] = str(int(form_dict["take_away"]))
+                #print form_dict
+                with connection.cursor() as c:
+                    c.execute('INSERT INTO "Restaurant" (price_range, banquet_capacity, take_away, delivery, establishment_id)\
+                        VALUES (%s, %s, %s, %s, %s);',
+                        [
+                            form_dict["price_range"],
+                            form_dict["banquet_capacity"],
+                            form_dict["take_away"],
+                            form_dict["delivery"],
+                            establishment_id
+                        ])
+            except psycopg2.IntegrityError as e:
+                return (False, establishment_id)
+        return (True, establishment_id)
 
 class Establishment(object):
 

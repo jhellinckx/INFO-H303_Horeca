@@ -1,0 +1,16 @@
+{% extends "admin/create_establishment.html" %}
+
+{% block specific_establishment_post %}
+	<form method="post" action="{% url 'admin.views.create_bar' %}">
+{% endblock %}
+
+{% block specific_establishment_form %}
+	<tr>
+	    <td>{{ form.smoking.label_tag }}</td>
+	    <td>{{ form.smoking }}</td>
+	</tr>
+	<tr>
+	    <td>{{ form.snack.label_tag }}</td>
+	    <td>{{ form.snack }}</td>
+	</tr>
+{% endblock %}

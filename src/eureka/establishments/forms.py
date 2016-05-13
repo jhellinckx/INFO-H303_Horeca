@@ -39,7 +39,12 @@ class HotelForm(EstablishmentForm):
 
 
 class BarForm(EstablishmentForm):
-	smoking = forms.BooleanField(required=True, label="Smoking")
-	snack = forms.BooleanField(required=True, label="Snack")
+	smoking = forms.BooleanField(required=False,label="Smoking")
+	snack = forms.BooleanField(required=False,label="Snack")
 
-#class RestaurantForm(EstablishmentForm):  --- Need to see how to handle restaurant closures
+class RestaurantForm(EstablishmentForm): 
+	price_range = forms.DecimalField(required = True, label = "Price range", max_digits=6, decimal_places=2)
+	banquet_capacity = forms.IntegerField(required = True, label = "Banquet capacity")
+	take_away = forms.BooleanField(required = False,label="Take away")
+	delivery = forms.BooleanField(required=False,label="Delivery")
+	#TODO HANDLE CLOSURES
