@@ -1,64 +1,62 @@
-{% load staticfiles %}
-<html>
-  <head>
-    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}"
-          rel="stylesheet">
-  </head>
+{% extends 'common/base.html' %}
 
-{% load dictionary_tag %}
-{% block establishment_name %}
-<h1> Establishment: {{ establishment.name }} </h1>
-{% endblock %}
+{% block content %}
 
-<h2> Tel: {{ establishment.phone_number }} <h2>
+	{% load dictionary_tag %}
+	{% block establishment_name %}
+	<h1> Establishment: {{ establishment.name }} </h1>
+	{% endblock %}
 
-{% if establishment.website %}
-<h2> Website : <a href=http://{{website}}>{{ establishment.website }} </a></h2>
-{% endif %}
+	<h2> Tel: {{ establishment.phone_number }} <h2>
 
-<h3> Address: </h3>
-<ul>
-	<li> Street: {{ establishment.address_street }} </li>
-	<li> Number: {{ establishment.address_number }} </li>
-	<li> Post code: {{ establishment.address_postcode }} </li>
-	<li> Locality: {{ establishment.address_locality }} </li>
-	<li> Longitude: {{ establishment.gps_longitude }} </li>
-	<li> Latitude: {{ establishment.gps_latitude }} </li>
-</ul>
+	{% if establishment.website %}
+	<h2> Website : <a href=http://{{website}}>{{ establishment.website }} </a></h2>
+	{% endif %}
 
-<h3> Tags: </h3>
-{% if tags_list %}
+	<h3> Address: </h3>
 	<ul>
-	{% for tag in tags_list %}
-		<li> {{ tag.tag_name }} x{{ tags_score|get_item:tag.tag_name }}</li>
-	{% endfor %}
+		<li> Street: {{ establishment.address_street }} </li>
+		<li> Number: {{ establishment.address_number }} </li>
+		<li> Post code: {{ establishment.address_postcode }} </li>
+		<li> Locality: {{ establishment.address_locality }} </li>
+		<li> Longitude: {{ establishment.gps_longitude }} </li>
+		<li> Latitude: {{ establishment.gps_latitude }} </li>
 	</ul>
-{% endif %}
 
-{% if average_score %}
-	<h3>Average score: {{ average_score }}/5 </h3>
-{% endif %}
+	<h3> Tags: </h3>
+	{% if tags_list %}
+		<ul>
+		{% for tag in tags_list %}
+			<li> {{ tag.tag_name }} x{{ tags_score|get_item:tag.tag_name }}</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
 
-<h3> Comments: </h3>
-{% if comments_list %}
-	<ul>
-	{% for comment in comments_list %}
-		<li> {{ comment.user_name }} - {{comment.score}}/5 - {{ comment.written_date}} <br> {{ comment.comment_text }}</li>
-	{% endfor %}
-	</ul>
-{% endif %}
+	{% if average_score %}
+		<h3>Average score: {{ average_score }}/5 </h3>
+	{% endif %}
 
-{% if add_comment_form %}
-<h3> Add a comment: </h3>
-<form action="/comment/" method="post">
-    {{ add_comment_form }}
-    <input type="submit" value="Submit" />
-</form>
-{% endif %}
+	<h3> Comments: </h3>
+	{% if comments_list %}
+		<ul>
+		{% for comment in comments_list %}
+			<li> {{ comment.user_name }} - {{comment.score}}/5 - {{ comment.written_date}} <br> {{ comment.comment_text }}</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
 
-{% block specific_infos %}
-LoL
+	{% if add_comment_form %}
+	<h3> Add a comment: </h3>
+	<form action="/comment/" method="post">
+	    {{ add_comment_form }}
+	    <input type="submit" value="Submit" />
+	</form>
+	{% endif %}
+
+	{% block specific_infos %}
+	LoL
+	{% endblock %}
+
+	Created by: {{ establishment.creator_name}}, on {{ establishment.created_time}}.
+
 {% endblock %}
-
-Created by: {{ establishment.creator_name}}, on {{ establishment.created_time}}.
-</html>

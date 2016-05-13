@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'establishments',
     'comments',
     'tags',
+    'common',
 )
 
 MIDDLEWARE_CLASSES = (

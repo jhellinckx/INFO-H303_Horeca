@@ -1,48 +1,45 @@
-{% load staticfiles %}
-<html>
-  <head>
-    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}"
-          rel="stylesheet">
-  </head>
+{% extends "common/base.html" %}
 
-{% if title %}
-    <h1> {{ title }} </h1>
-{% else %}
-    <h1> All establishments in database: </h1>
-{% endif %}
+{% block content %}
+    {% if title %}
+        <h1> {{ title }} </h1>
+    {% else %}
+        <h1> All establishments in database: </h1>
+    {% endif %}
 
-{% if form %}
-<h3> Search: </h3>
-<form action="/establishments/search/" method="get">
-    {{ form }}
-    <input type="submit" value="Search" />
-</form>
-{% endif %}
+    {% if form %}
+    <h3> Search: </h3>
+    <form action="/establishments/search/" method="get">
+        {{ form }}
+        <input type="submit" value="Search" />
+    </form>
+    {% endif %}
 
-<h3> Bars: </h3>
-{% if all_bars_list %}
-    <ul>
-    {% for bar in all_bars_list %}
-        <li><a href="/establishments/bar/{{ bar.establishment_id }}/">{{ bar.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% endif %}
+    <h3> Bars: </h3>
+    {% if all_bars_list %}
+        <ul>
+        {% for bar in all_bars_list %}
+            <li><a href="/establishments/bar/{{ bar.establishment_id }}/">{{ bar.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
 
-<h3> Restaurants: </h3>
-{% if all_restaurants_list %}
-    <ul>
-    {% for restaurant in all_restaurants_list %}
-        <li><a href="/establishments/restaurant/{{ restaurant.establishment_id }}/">{{ restaurant.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% endif %}
+    <h3> Restaurants: </h3>
+    {% if all_restaurants_list %}
+        <ul>
+        {% for restaurant in all_restaurants_list %}
+            <li><a href="/establishments/restaurant/{{ restaurant.establishment_id }}/">{{ restaurant.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
 
-<h3> Hotels: </h3>
-{% if all_hotels_list %}
-    <ul>
-    {% for hotel in all_hotels_list %}
-        <li><a href="/establishments/hotel/{{ hotel.establishment_id }}/">{{ hotel.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% endif %}
-</html>
+    <h3> Hotels: </h3>
+    {% if all_hotels_list %}
+        <ul>
+        {% for hotel in all_hotels_list %}
+            <li><a href="/establishments/hotel/{{ hotel.establishment_id }}/">{{ hotel.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+{% endblock %}
