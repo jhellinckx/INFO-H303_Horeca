@@ -12,4 +12,40 @@
 	</ul>
 {% endif %}
 
+	<h3> Commented bars: </h3>
+    {% if bars_list %}
+        <ul>
+        {% for bar in bars_list %}
+            <li><a href="/establishments/bar/{{ bar.establishment_id }}/">{{ bar.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h3> Commented restaurants: </h3>
+    {% if restaurants_list %}
+        <ul>
+        {% for restaurant in restaurants_list %}
+            <li><a href="/establishments/restaurant/{{ restaurant.establishment_id }}/">{{ restaurant.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h3> Commented hotels: </h3>
+    {% if hotels_list %}
+        <ul>
+        {% for hotel in hotels_list %}
+            <li><a href="/establishments/hotel/{{ hotel.establishment_id }}/">{{ hotel.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h3> Tag applied: </h3>
+    {% if tags_list %}
+        <ul>
+        {% for tag in tags_list %}
+            <li>{{ tag.name }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
 {% endblock %}
