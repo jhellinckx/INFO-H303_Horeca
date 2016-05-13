@@ -21,7 +21,7 @@ urlpatterns = [
 	url(r'^authenticate/', include("login.urls")),
     url(r'^establishments/', include("establishments.urls")),
     url(r'^admin/', include("admin.urls")),
-    #url(r'^requests/', include("dbrequests.urls")),
+    url(r'^requests/', include("dbrequests.urls")),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

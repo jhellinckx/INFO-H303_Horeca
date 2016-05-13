@@ -120,7 +120,10 @@ def addCommentForm(request, context={}, establishment_id=-1):
 				score = form.cleaned_data['score']
 				comment_text = form.cleaned_data['comment_text']
 				written_date = datetime.datetime.now()
-				EstablishmentComment.db.insert(written_date, score, comment_text, user.name, establishment_id)
+				try:
+					EstablishmentComment.db.insert(written_date, score, comment_text, user.name, establishment_id)
+				except IntegrityError:
+					pass
 				return redirect(request, establishment_id)
 			else:
 				return redirect(request, establishment_id)

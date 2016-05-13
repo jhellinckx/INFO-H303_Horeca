@@ -63,7 +63,7 @@ CREATE TABLE "Hotel"(
 );
 
 CREATE TABLE "EstablishmentComment"(
-	written_date TIMESTAMP NOT NULL,
+	written_date DATE NOT NULL,
 	score SMALLINT NOT NULL CHECK (score>=0 and score<=5),
 	comment_text TEXT NOT NULL,
 	user_name VARCHAR(16) NOT NULL,

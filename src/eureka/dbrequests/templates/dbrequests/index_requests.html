@@ -1,3 +1,22 @@
 {% extends 'common/base.html' %}
+	{% block content %}
+		<h1> Choose the request: </h1>
 
-<h1> first test </h1>
+		{% if requests_users %}
+		<h3> Requests returning Users: </h3>
+		<ul>
+			{% for request in requests_users %}
+			<li><a href="/requests/users/{{ request.iD }}/"> {{ request.name }} </a></li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+
+		{% if requests_establishments %}
+		<h3> Requests returning Establihsments: </h3>
+		<ul>
+			{% for request in requests_establishments %}
+			<li><a href="/requests/establishments/{{ request.iD }}/"> {{ request.name }} </a></li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+	{% endblock %}

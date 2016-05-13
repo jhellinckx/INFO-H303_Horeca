@@ -8,7 +8,7 @@
   <body>
   	<nav>
   		<a href="{% url 'establishments.views.index' %}">Establishments</a>
-      <a href="{% url 'establishments.views.requests' %}">Requests</a>
+      <a href="{% url 'dbrequests.views.index_requests' %}">Requests</a>
   		{% if user %}
   			<a href="{% url 'login.views.logout' %}">Log out</a>
   		{% else %}
