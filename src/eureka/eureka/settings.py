@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'tags',
     'common',
     'admin',
+    'dbrequests',
 )
 
 MIDDLEWARE_CLASSES = (
