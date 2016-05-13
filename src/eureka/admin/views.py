@@ -75,6 +75,8 @@ def create_hotel(request):
 		context["form"] = HotelForm()
 		return render(request, 'admin/create_hotel.html', context)
 
+DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
 def edit_restaurant(request, establishment_id):
 	(context, user, res) = check_admin(request)
 	if res : return res
@@ -96,6 +98,14 @@ def edit_restaurant(request, establishment_id):
 		db_dict = restaurant.get_dict()
 		
 		form = RestaurantForm()
+		closures = RestaurantClosures.db.get_by_establishment(establishment_id)
+		for closure in closures :
+			opt = []
+			if closure.am :
+				opt.append("am")
+			if closure.pm :
+				opt.append("pm")
+			db_dict[closure.day.lower()] = opt
 		for field in form.fields:
 			form.initial[field] = db_dict[field]
 		context["form"] = form

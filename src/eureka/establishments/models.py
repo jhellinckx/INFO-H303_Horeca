@@ -208,6 +208,9 @@ class RestaurantDBManager(EstablishmentDBManager):
                         ])
             except IntegrityError as e:
                 return False
+            success = RestaurantClosures.db.edit_from_dict(form_dict, establishment_id)
+            if not success:
+                return False
         return True
 
     def delete(self, establishment_id):
@@ -323,6 +326,24 @@ class RestaurantClosuresDBManager(BaseDBManager):
                             day,
                             am,
                             pm,
+                            establishment_id
+                        ])
+        except IntegrityError as e:
+            return False
+        return True
+
+    def edit_from_dict(self, form_dict, establishment_id):
+        try:
+            with connection.cursor() as c:
+                for day in DAY_NAMES:
+                    day = day.lower()
+                    am = "am" in form_dict[day]
+                    pm = "pm" in form_dict[day]
+                    c.execute('UPDATE "RestaurantClosures" SET am=%s, pm=%s WHERE day=%s AND establishment_id=%s',\
+                        [
+                            am,
+                            pm,
+                            day,
                             establishment_id
                         ])
         except IntegrityError as e:
