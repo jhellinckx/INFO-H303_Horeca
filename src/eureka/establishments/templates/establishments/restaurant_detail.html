@@ -9,7 +9,10 @@
 {% if closures %}
 	<ul>
     {% for closure in closures %}
-        <li>{{ closure.day }} --  AM: {{ closure.am }}, PM: {{ closure.pm }}</li>
+        <li>{{ closure.day }} -- AM:
+        	{% if closure.am %} closed {% else %} open {% endif %}
+        	PM: 
+        	{% if closure.pm %} closed {% else %} open {% endif %}</li>
     {% endfor %}
     </ul>
 {% else %}

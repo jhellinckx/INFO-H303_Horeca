@@ -2,8 +2,10 @@ from django.db import connection
 from common.models import BaseDBManager
 
 class CommentDBManager(BaseDBManager):
-    def get_by_establishment(self, establishment):
-        pass
+    def get_by_establishment(self, establishment_id):
+        with connection.cursor() as c:
+            c.execute('SELECT written_date, score, comment_text, user_name, establishment_id FROM "EstablishmentComment" WHERE establishment_id = %s;', [establishment_id])
+            return [EstablishmentComment.from_db(d) for d in self.fetch_dicts(c)]
 
     def get_by_user(self, user):
         pass

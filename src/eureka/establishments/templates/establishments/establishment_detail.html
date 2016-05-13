@@ -36,7 +36,7 @@
 {% if comments_list %}
 	<ul>
 	{% for comment in comments_list %}
-		<li> {{ comment.user_name.name }} - {{comment.score}}/5 - {{ comment.written_date}} <br> {{ comment.comment_text }}</li>
+		<li> {{ comment.user_name }} - {{comment.score}}/5 - {{ comment.written_date}} <br> {{ comment.comment_text }}</li>
 	{% endfor %}
 	</ul>
 {% endif %}

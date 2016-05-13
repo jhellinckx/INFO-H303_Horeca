@@ -31,9 +31,6 @@ class RestaurantDBManager(EstablishmentDBManager):
     def model(self):
         return Restaurant
 
-class RestaurantClosuresDBManager(BaseDBManager):
-    pass
-
 class Establishment(object):
 
     table = 'Establishment'
@@ -107,12 +104,25 @@ class Restaurant(Establishment):
         return restaurant
 
 
+class RestaurantClosuresDBManager(BaseDBManager):
+    def get_by_establishment(self, establishment_id):
+        with connection.cursor() as c :
+            c.execute('SELECT day, am, pm, establishment_id FROM "RestaurantClosures" WHERE establishment_id = %s', [establishment_id])
+            return [RestaurantClosures.from_db(d) for d in self.fetch_dicts(c)]
 
 class RestaurantClosures(object):
-    pass
-    # day = models.CharField(max_length=16)
-    # am = models.BooleanField()
-    # pm = models.BooleanField()
-    # establishment = models.ForeignKey(Establishment)
+    
+    db = RestaurantClosuresDBManager()
+
+    def __init__(self, establishment_id, day, am, pm):
+        self.establishment_id = establishment_id
+        self.day = day
+        self.am = am
+        self.pm = pm
+
+    @classmethod
+    def from_db(cls, db_dict):
+        return cls(db_dict["establishment_id"], db_dict["day"], db_dict["am"], db_dict["pm"])
+
 
     

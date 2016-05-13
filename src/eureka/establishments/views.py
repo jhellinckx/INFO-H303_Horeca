@@ -27,14 +27,9 @@ def getEstablishmentContext(specific_establishment, establishment_id):
 	return context
 
 def getCommentsContext(context, establishment_id):
-	comments_list = []
-	with connection.cursor() as cursor:
-		cursor.execute('SELECT written_date,score,comment_text,user_name,establishment_id FROM "EstablishmentComment" WHERE establishment_id = %s;', [establishment_id])
-		for row in cursor.fetchall():
-			estCom = Establishmentcomment(written_date=row[0], score=row[1], comment_text=row[2], user_name=User.objects.get(name=row[3]), establishment_id=Establishment.objects.get(id=row[4]))
-			comments_list.append(estCom)
-	if len(comments_list) != 0:
-		context['comments_list'] = comments_list
+	comments = EstablishmentComment.db.get_by_establishment(establishment_id)
+	if(len(comments) != 0):
+		context['comments_list'] = comments
 
 def getAverageScoreEstablishmentContext(context, establishment_id):
 	averageScore = -1
@@ -64,48 +59,34 @@ def getTagsContext(context, establishment_id): #same as getCommentsContext
 def restaurant_detail(request, establishment_id):
 	restaurant = Restaurant.db.get_by_id(establishment_id)
 	if restaurant == None : 
-		raise Http404("Establishment does not exist")
+		raise Http404("Restaurant does not exist")
 	context = {"establishment" : restaurant}
 	getTagsContext(context, establishment_id)
 	getCommentsContext(context, establishment_id)
 	getAverageScoreEstablishmentContext(context, establishment_id)
-
-	
-
-	#getRestaurantClosuresContext(context, establishment_id)
-	
+	getRestaurantClosuresContext(context, establishment_id)
+	#addCommentForm(request, context)
 	return render(request, 'establishments/restaurant_detail.html', context)
 
-# def getRestaurantClosuresContext(context, establishment_id):
-# 	closures = []
-# 	with connection.cursor() as cursor:
-# 		cursor.execute('SELECT day, am, pm, establishment_id FROM "RestaurantClosures" WHERE establishment_id = %s', [establishment_id])
-# 		for row in cursor.fetchall():
-# 			closures.append(Restaurantclosures(day=row[0], am=row[1], pm=row[2], establishment=Establishment.objects.get(id=row[3])))
-# 	if len(closures) != 0:
-# 		context['closures'] = closures
+def getRestaurantClosuresContext(context, establishment_id):
+	closures = RestaurantClosures.db.get_by_establishment(establishment_id)
+	if len(closures) != 0 :
+		context["closures"] = closures
 
-# def bar_detail(request, establishment_id):
-# 	try:
-# 		bar = Bar.objects.raw('SELECT * FROM "Bar" WHERE establishment_id = %s;' , [establishment_id])[0]
-# 		context = getEstablishmentContext(bar, establishment_id)
-# 		context['smoking'] = "Yes" if bar.smoking  else "No"
-# 		context['snack'] = "Yes" if bar.snack else "No"
-# 		addCommentForm(request, context)
-# 	except IndexError:  #if no bar is returned due to manaly input url
-# 		raise Http404("Establishment does not exist")
-# 	return render(request, 'establishments/bar_detail.html', context)
+def bar_detail(request, establishment_id):
+	bar = Bar.db.get_by_id(establishment_id)
+	if bar == None :
+		raise Http404("Bar does not exist")
+	context = {"establishment" : bar}
+	# addCommentForm(request, context)
+	return render(request, 'establishments/bar_detail.html', context)
 
-# def hotel_detail(request, establishment_id):
-# 	try:
-# 		hotel = hotel.objects.raw('SELECT * FROM "Hotel" WHERE establishment_id = %s;' , [establishment_id])[0]
-# 		context = getEstablishmentContext(hotel, establishment_id)
-# 		context['stars'] = hotel.stars
-# 		context['rooms_number'] = hotel.rooms_number
-# 		context['price_range'] = hotel.price_range
-# 	except IndexError:  #if no hotel is returned due to manaly input url
-# 		raise Http404("Establishment does not exist")
-# 	return render(request, 'establishments/hotel_detail.html', context)
+def hotel_detail(request, establishment_id):
+	hotel = Hotel.db.get_by_id(establishment_id)
+	if hotel == None :
+		raise Http404("Hotel does not exist")
+	context = {"establishment" : hotel}
+	return render(request, 'establishments/hotel_detail.html', context)
 
 
 
