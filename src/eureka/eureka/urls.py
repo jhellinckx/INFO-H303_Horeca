@@ -17,8 +17,10 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
+from common import views
+
 urlpatterns = [
-	#url(r'^$', include("users.urls")),
+	url(r'^$',views.index, name="index"),
 	url(r'^users/', include("users.urls")),
 	url(r'^authenticate/', include("login.urls")),
     url(r'^establishments/', include("establishments.urls")),
