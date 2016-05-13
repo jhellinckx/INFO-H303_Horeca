@@ -164,6 +164,30 @@ def redirect(request, establishment_id):
 		return HttpResponseRedirect('/establishments/bar/'+str(establishment_id))
 	if Hotel.db.get_by_id(establishment_id) != None:
 		return HttpResponseRedirect('/establishments/hotel/'+str(establishment_id))
+	return HttpResponseRedirect('/establishments/')
+
+def add_new_tag(request, establishment_id=-1):
+	context = user_context(request)
+	user = context["user"]
+	if request.method == 'POST':
+		if user != None:
+			form = TagForm(request.POST)
+			establishment_id = form.data['establishment_id']
+			if form.is_valid():
+				name = form.cleaned_data['name']
+				try:
+					Tag.db.insert(name)
+				except:
+					pass
+				return redirect(request, establishment_id)
+			else:
+				redirect(request, establishment_id)
+		else:
+			HttpResponseRedirect('/authenticate/login')
+	else:
+		form = TagForm(initial={'establishment_id': establishment_id})
+	context['add_new_tag_form'] = form
+	return render(request, 'establishments/add_new_tag.html', context)
 
 def search_results(request, name_field, establishments, tags): #For tags, return establishments who got at least one of the selected tags
 	search_restaurants_list, search_bars_list, search_hotels_list = {}, {}, {}

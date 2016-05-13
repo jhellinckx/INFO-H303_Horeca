@@ -10,5 +10,7 @@ urlpatterns = [
     url(r'^search/$', views.results, name="results"),
     url(r'^addComment/$', views.addCommentForm, name="addComment"),
     url(r'^addTag/$', views.addEstablishmentTagForm, name="addTags"),
+    url(r'^addNewTag/$', views.add_new_tag, name="addNewTag"),
+    url(r'^addNewTag/(?P<establishment_id>[0-9]+)/$', views.add_new_tag, name="addNewTag"),
     # url(r'^add/$', views.addTest, name="add_test"),
 ]

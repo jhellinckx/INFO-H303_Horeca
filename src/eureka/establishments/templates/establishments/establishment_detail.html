@@ -52,6 +52,8 @@
 	    {{ add_tags_form }}
 	    <input type="submit" value="Submit" />
 	</form>
+	<a href="/establishments/addNewTag/{{ establishment.id }}"> Add a new tag</a>
+
 	{% endif %}
 
 	{% if average_score %}
@@ -101,6 +103,6 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxbAXHlETOBHdvE8MN-VMICV4f8cJI_9A&callback=initMap"
     async defer></script>
 
-	Created by: {{ establishment.creator_name}}, on {{ establishment.created_time}}.
+	Created by: <a href="/users/{{ establishment.creator_name }}"> {{ establishment.creator_name}} </a>, on {{ establishment.created_time}}.
 
 {% endblock %}
