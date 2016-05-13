@@ -29,6 +29,7 @@ def getEstablishmentContext(context, request, establishment_id):
 	getCommentsContext(context, establishment_id)
 	getAverageScoreEstablishmentContext(context, establishment_id)
 	addCommentForm(request, context, establishment_id)
+	addEstablishmentTagForm(request, context, establishment_id)
 	return context
 
 def getCommentsContext(context, establishment_id):
@@ -122,7 +123,7 @@ def addCommentForm(request, context={}, establishment_id=-1):
 				written_date = datetime.datetime.now()
 				try:
 					EstablishmentComment.db.insert(written_date, score, comment_text, user.name, establishment_id)
-				except IntegrityError:
+				except IntegrityError: #Tried to post a comment on the same day on the same establishment
 					pass
 				return redirect(request, establishment_id)
 			else:
@@ -132,6 +133,29 @@ def addCommentForm(request, context={}, establishment_id=-1):
 	else:
 		form = EstablishmentCommentForm(initial={'establishment_id': establishment_id})
 	context['add_comment_form'] = form
+
+
+def addEstablishmentTagForm(request, context ={}, establishment_id=-1):
+	if request.method == 'POST':
+		user = get_user(request)
+		if user != None:
+			form = EstablishmentTagsForm(request.POST)
+			establishment_id = form.data['establishment_id']
+			if form.is_valid():
+				tag_name = form.cleaned_data['tag_name']
+				try:
+					EstablishmentTag.db.insert(establishment_id, tag_name, user.name)
+				except IntegrityError: #tried to apply the same label twice on the same establishment
+					pass
+				return redirect(request, establishment_id)
+			else:
+				return redirect(request, establishment_id)
+		else:
+			HttpResponseRedirect('/authenticate/login')
+	else:
+		form = EstablishmentTagsForm(initial={'establishment_id': establishment_id})
+	context['add_tags_form'] = form
+
 
 def redirect(request, establishment_id):
 	if Restaurant.db.get_by_id(establishment_id) != None:
@@ -202,20 +226,3 @@ def modifySqlQueryForTags(sqlQuery, tags):
 	sqlQuery = getSqlQueryFromList(tags, sqlQuery)
 	sqlQuery += ';'
 	return sqlQuery
-
-def addTest(request):
-	# if this is a POST request we need to process the form data
-    if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = HotelForm(request.POST)
-        # check whether it's valid:
-        if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # We will call the INSERT sql method here to add infos to the DB
-            return HttpResponse("Fine")
-
-    # if a GET (or any other method) we'll create a blank form
-    else:
-        form = HotelForm()
-
-    return render(request, 'establishments/addTest.html', {'form': form})

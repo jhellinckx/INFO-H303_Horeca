@@ -45,6 +45,15 @@
 		</ul>
 	{% endif %}
 
+	{% if add_tags_form %}
+	<h3> Add a tag: </h3>
+	<form action="/establishments/addTag/" method="post">
+		{% csrf_token %}
+	    {{ add_tags_form }}
+	    <input type="submit" value="Submit" />
+	</form>
+	{% endif %}
+
 	{% if average_score %}
 		<h3>Average score: {{ average_score }}/5 </h3>
 	{% endif %}
