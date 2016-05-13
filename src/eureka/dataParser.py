@@ -100,13 +100,18 @@ def parseTags(establishment, establishment_id):
 			DB.insertEstablishmentTags(establishment_id, name, username)
 
 def parseRestaurantClosures(restaurant, establishment_id):
+	parsed_days = []
 	for day in restaurant.findall("Informations/Closed/On"):
 		day_am, day_pm = True,True  #If no attribute "hour" present in closure, means closed all day
 		if day.get("hour") == "pm": 
 			day_am = False #means it is only closed for PM (so AM = False)
 		elif day.get("hour") == "am":
 			day_pm = False
+		parsed_days.append(DAY_NAMES[int(day.get("day"))])
 		DB.insertRestaurantClosures(establishment_id, DAY_NAMES[int(day.get("day"))], day_am, day_pm)
+	for day in DAY_NAMES :
+		if day not in parsed_days:
+			DB.insertRestaurantClosures(establishment_id, day, False, False)
 
 def stringToDateFormat(dateString):
 	dateString = dateString.split("/")

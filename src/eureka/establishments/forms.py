@@ -47,4 +47,16 @@ class RestaurantForm(EstablishmentForm):
 	banquet_capacity = forms.IntegerField(required = True, label = "Banquet capacity")
 	take_away = forms.BooleanField(required = False,label="Take away")
 	delivery = forms.BooleanField(required=False,label="Delivery")
-	#TODO HANDLE CLOSURES
+
+	CLOSURE_OPTION = (
+			("am", "am"),
+			("pm", "pm")
+		)
+
+	monday = forms.MultipleChoiceField(required = False, label= 'Monday', widget=forms.CheckboxSelectMultiple, choices=CLOSURE_OPTION)
+	tuesday = forms.MultipleChoiceField(required = False, label= 'Tuesday', widget=forms.CheckboxSelectMultiple, choices=CLOSURE_OPTION)
+	wednesday = forms.MultipleChoiceField(required = False, label= 'Wednesday', widget=forms.CheckboxSelectMultiple, choices=CLOSURE_OPTION)
+	thursday = forms.MultipleChoiceField(required = False, label= 'Thursday', widget=forms.CheckboxSelectMultiple, choices=CLOSURE_OPTION)
+	friday = forms.MultipleChoiceField(required = False, label= 'Friday', widget=forms.CheckboxSelectMultiple, choices=CLOSURE_OPTION)
+	saturday = forms.MultipleChoiceField(required = False, label= 'Saturday', widget=forms.CheckboxSelectMultiple, choices=CLOSURE_OPTION)
+	sunday = forms.MultipleChoiceField(required = False, label= 'Sunday', widget=forms.CheckboxSelectMultiple, choices=CLOSURE_OPTION)

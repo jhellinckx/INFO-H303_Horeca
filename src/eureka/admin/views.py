@@ -32,7 +32,6 @@ def create_restaurant(request):
 	if res : return res
 	if request.method == 'POST':
 		form = RestaurantForm(request.POST)
-		print form.errors
 		if form.is_valid():
 			(success, establishment_id) = Restaurant.db.create_from_dict(form.cleaned_data, user.name)
 			if success :
