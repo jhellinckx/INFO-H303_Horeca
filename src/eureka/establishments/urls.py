@@ -8,5 +8,6 @@ urlpatterns = [
     url(r'^bar/(?P<establishment_id>[0-9]+)/$', views.bar_detail, name='bar_detail'),
     url(r'^hotel/(?P<establishment_id>[0-9]+)/$', views.hotel_detail, name='hotel_detail'),
     url(r'^search/$', views.results, name="results"),
+    url(r'^addComment/$', views.addCommentForm, name="addComment"),
     # url(r'^add/$', views.addTest, name="add_test"),
 ]

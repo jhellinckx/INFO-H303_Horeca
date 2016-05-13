@@ -58,7 +58,8 @@
 
 	{% if add_comment_form %}
 	<h3> Add a comment: </h3>
-	<form action="/comment/" method="post">
+	<form action="/establishments/addComment/" method="post">
+		{% csrf_token %}
 	    {{ add_comment_form }}
 	    <input type="submit" value="Submit" />
 	</form>

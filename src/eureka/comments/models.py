@@ -10,6 +10,10 @@ class CommentDBManager(BaseDBManager):
     def get_by_user(self, user):
         pass
 
+    def insert(self, written_date, score, comment_text, user_name, establishment_id):
+        with connection.cursor() as c:
+            c.execute('INSERT INTO "EstablishmentComment" VALUES(%s, %s, %s, %s, %s);', [written_date, score, comment_text, user_name, establishment_id])
+
 
 class EstablishmentComment(object):
 

@@ -13,6 +13,7 @@ from login.views import *
 from tags.forms import *
 from establishments.forms import *
 from comments.forms import EstablishmentCommentForm
+import datetime
 
 def index(request):
 	context = user_context(request)
@@ -27,7 +28,7 @@ def getEstablishmentContext(context, request, establishment_id):
 	getTagsContext(context, establishment_id)
 	getCommentsContext(context, establishment_id)
 	getAverageScoreEstablishmentContext(context, establishment_id)
-	addCommentForm(request, context)
+	addCommentForm(request, context, establishment_id)
 	return context
 
 def getCommentsContext(context, establishment_id):
@@ -109,14 +110,33 @@ def addSearchForm(request, context):
 		form = SearchForm()
 	context['form'] = form
 
-def addCommentForm(request, context):
+def addCommentForm(request, context={}, establishment_id=-1):
 	if request.method == 'POST':
-		form = EstablishmentCommentForm(request.POST)
-		if form.is_valid():
-			return HttpResponse("Fine")
+		user = get_user(request)
+		if user != None:
+			form = EstablishmentCommentForm(request.POST)
+			establishment_id = form.data['establishment_id']
+			if form.is_valid():
+				score = form.cleaned_data['score']
+				comment_text = form.cleaned_data['comment_text']
+				written_date = datetime.datetime.now()
+				EstablishmentComment.db.insert(written_date, score, comment_text, user.name, establishment_id)
+				return redirect(request, establishment_id)
+			else:
+				return redirect(request, establishment_id)
+		else:
+			return HttpResponseRedirect('/authenticate/login')
 	else:
-		form = EstablishmentCommentForm()
+		form = EstablishmentCommentForm(initial={'establishment_id': establishment_id})
 	context['add_comment_form'] = form
+
+def redirect(request, establishment_id):
+	if Restaurant.db.get_by_id(establishment_id) != None:
+		return HttpResponseRedirect('/establishments/restaurant/'+str(establishment_id))
+	if Bar.db.get_by_id(establishment_id) != None:
+		return HttpResponseRedirect('/establishments/bar/'+str(establishment_id))
+	if Hotel.db.get_by_id(establishment_id) != None:
+		return HttpResponseRedirect('/establishments/hotel/'+str(establishment_id))
 
 def search_results(request, name_field, establishments, tags): #For tags, return establishments who got at least one of the selected tags
 	search_restaurants_list, search_bars_list, search_hotels_list = {}, {}, {}
