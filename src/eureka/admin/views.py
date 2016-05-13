@@ -176,12 +176,30 @@ def edit_hotel(request, establishment_id):
 		return render(request, 'admin/edit_hotel.html', context)
 
 def delete_restaurant(request, establishment_id):
-	pass
+	(context, user, res) = check_admin(request)
+	if res : return res
+	success = Restaurant.db.delete(establishment_id)
+	if success :
+		return redirect('establishments.views.index')
+	else:
+		return redirect("/establishments/restaurant/"+str(establishment_id))
 
 def delete_bar(request, establishment_id):
-	pass
+	(context, user, res) = check_admin(request)
+	if res : return res
+	success = Bar.db.delete(establishment_id)
+	if success :
+		return redirect('establishments.views.index')
+	else:
+		return redirect("/establishments/bar/"+str(establishment_id))
 
 def delete_hotel(request, establishment_id):
-	pass
+	(context, user, res) = check_admin(request)
+	if res : return res
+	success = Hotel.db.delete(establishment_id)
+	if success :
+		return redirect('establishments.views.index')
+	else:
+		return redirect("/establishments/hotel/"+str(establishment_id))
 
 

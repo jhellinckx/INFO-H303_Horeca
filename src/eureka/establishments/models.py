@@ -106,6 +106,15 @@ class HotelDBManager(EstablishmentDBManager):
                 return False
         return True
 
+    def delete(self, establishment_id):
+        try:
+            with connection.cursor() as c:
+                c.execute('DELETE FROM "Hotel" WHERE establishment_id=%s;',[establishment_id])
+        except IntegrityError as e:
+            return False
+        return True
+
+
 
 class BarDBManager(EstablishmentDBManager):
     def model(self):
@@ -144,6 +153,14 @@ class BarDBManager(EstablishmentDBManager):
                         ])
             except IntegrityError as e:
                 return False
+        return True
+
+    def delete(self, establishment_id):
+        try:
+            with connection.cursor() as c:
+                c.execute('DELETE FROM "Bar" WHERE establishment_id=%s;',[establishment_id])
+        except IntegrityError as e:
+            return False
         return True
 
 class RestaurantDBManager(EstablishmentDBManager):
@@ -190,6 +207,13 @@ class RestaurantDBManager(EstablishmentDBManager):
                 return False
         return True
 
+    def delete(self, establishment_id):
+        try:
+            with connection.cursor() as c:
+                c.execute('DELETE FROM "Restaurant" WHERE establishment_id=%s;',[establishment_id])
+        except IntegrityError as e:
+            return False
+        return True
 
 class Establishment(object):
 
