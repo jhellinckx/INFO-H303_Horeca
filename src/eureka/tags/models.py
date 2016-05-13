@@ -2,7 +2,11 @@ from django.db import connection
 from common.models import BaseDBManager
 
 class TagDBManager(BaseDBManager):
-    pass
+    
+    def get_all(self):
+        with connection.cursor() as c:
+            c.execute('SELECT * FROM "Tag";')
+            return [Tag.from_db(d) for d in self.fetch_dicts(c)]
 
 class EstablishmentTagDBManager(BaseDBManager):
 

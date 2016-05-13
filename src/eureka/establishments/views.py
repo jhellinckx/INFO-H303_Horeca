@@ -6,6 +6,7 @@ from establishments.models import *
 from tags.models import *
 from comments.models import EstablishmentComment
 from login.models import User
+from common.models import BaseDBManager
 
 from tags.forms import *
 from establishments.forms import *
@@ -16,7 +17,7 @@ def index(request):
 	all_bars_list = Bar.db.get_all()
 	all_hotels_list = Hotel.db.get_all()
 	context = {'all_restaurants_list': all_restaurants_list, 'all_bars_list': all_bars_list, 'all_hotels_list': all_hotels_list}
-	#addSearchForm(request, context)
+	addSearchForm(request, context)
 	return render(request, 'establishments/index.html', context)
 
 def getEstablishmentContext(specific_establishment, establishment_id):
@@ -65,7 +66,7 @@ def restaurant_detail(request, establishment_id):
 	getCommentsContext(context, establishment_id)
 	getAverageScoreEstablishmentContext(context, establishment_id)
 	getRestaurantClosuresContext(context, establishment_id)
-	#addCommentForm(request, context)
+	addCommentForm(request, context)
 	return render(request, 'establishments/restaurant_detail.html', context)
 
 def getRestaurantClosuresContext(context, establishment_id):
@@ -78,7 +79,7 @@ def bar_detail(request, establishment_id):
 	if bar == None :
 		raise Http404("Bar does not exist")
 	context = {"establishment" : bar}
-	# addCommentForm(request, context)
+	addCommentForm(request, context)
 	return render(request, 'establishments/bar_detail.html', context)
 
 def hotel_detail(request, establishment_id):
@@ -86,95 +87,99 @@ def hotel_detail(request, establishment_id):
 	if hotel == None :
 		raise Http404("Hotel does not exist")
 	context = {"establishment" : hotel}
+	addCommentForm(request, context)
 	return render(request, 'establishments/hotel_detail.html', context)
 
+def addSearchForm(request, context):
+	if 'name' in request.GET:
+		form = SearchForm(request.GET)
+		if form.is_valid():
+			name_field = form.cleaned_data['name']
+			name_field = '%'+name_field+'%'
+			establishments = form.cleaned_data['establishments']
+			tags = form.cleaned_data['tags']
+			return search_results(request,name_field, establishments, tags)
+	else:
+		form = SearchForm()
+	context['form'] = form
+
+def addCommentForm(request, context):
+	if request.method == 'POST':
+		form = EstablishmentCommentForm(request.POST)
+		if form.is_valid():
+			return HttpResponse("Fine")
+	else:
+		form = EstablishmentCommentForm()
+	context['add_comment_form'] = form
+
+def search_results(request, name_field, establishments, tags): #For tags, return establishments who got at least one of the selected tags
+	search_restaurants_list, search_bars_list, search_hotels_list = {}, {}, {}
+	sqlQueryRestaurant = 'SELECT DISTINCT * FROM "Restaurant" JOIN "Establishment" ON "Restaurant".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Restaurant".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
+	sqlQueryBar = 'SELECT DISTINCT * FROM "Bar" JOIN "Establishment" ON "Bar".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Bar".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
+	sqlQueryHotel = 'SELECT DISTINCT * FROM "Hotel" JOIN "Establishment" ON "Hotel".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Hotel".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
+	if len(tags) != 0:
+		sqlQueryRestaurant = modifySqlQueryForTags(sqlQueryRestaurant, tags)
+		sqlQueryBar = modifySqlQueryForTags(sqlQueryBar, tags)
+		sqlQueryHotel = modifySqlQueryForTags(sqlQueryHotel, tags)
+	with connection.cursor() as c:
+		manager = BaseDBManager()
+		if 'restaurants' in establishments:
+			c.execute(sqlQueryRestaurant, [name_field])
+			search_restaurants_list = [Restaurant.from_db(d) for d in manager.fetch_dicts(c)]
+		if 'bars' in establishments:
+			c.execute(sqlQueryBar, [name_field])
+			search_bars_list = [Bar.from_db(d) for d in manager.fetch_dicts(c)]
+		if 'hotels' in establishments:
+			c.execute(sqlQueryHotel, [name_field])
+			search_hotels_list = [Hotel.from_db(d) for d in manager.fetch_dicts(c)]
+	context = {'all_restaurants_list': search_restaurants_list, 'all_bars_list': search_bars_list, 'all_hotels_list': search_hotels_list, 'title': 'Search results:'}
+	return render(request, 'establishments/index.html', context)
 
 
-# def addSearchForm(request, context):
-# 	if 'name' in request.GET:
-# 		form = SearchForm(request.GET)
-# 		if form.is_valid():
-# 			name_field = form.cleaned_data['name']
-# 			name_field = '%'+name_field+'%'
-# 			establishments = form.cleaned_data['establishments']
-# 			tags = form.cleaned_data['tags']
-# 			return search_results(request,name_field, establishments, tags)
-# 	else:
-# 		form = SearchForm()
-# 	context['form'] = form
+def results(request):
+	if 'name' or 'establishments' or 'tags' in request.GET:
+		form = SearchForm(request.GET)
+		if form.is_valid():
+			name_field = form.cleaned_data['name']
+			name_field = '%'+name_field+'%'
+			establishments = form.cleaned_data['establishments']
+			tags = form.cleaned_data['tags']
+			return search_results(request,name_field, establishments, tags)
+	else:
+		form = SearchForm()
+	context['form'] = form
+	return render(request, 'establishments/index.html', context)
 
-# def addCommentForm(request, context):
-# 	if request.method == 'POST':
-# 		form = EstablishmentCommentForm(request.POST)
-# 		if form.is_valid():
-# 			return HttpResponse("Fine")
-# 	else:
-# 		form = EstablishmentCommentForm()
-# 	context['add_comment_form'] = form
-
-# def search_results(request, name_field, establishments, tags): #For tags, return establishments who got at least one of the selected tags
-# 	search_restaurants_list, search_bars_list, search_hotels_list = {}, {}, {}
-# 	sqlQueryRestaurant = 'SELECT DISTINCT * FROM "Restaurant" JOIN "Establishment" ON "Restaurant".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Restaurant".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
-# 	sqlQueryBar = 'SELECT DISTINCT * FROM "Bar" JOIN "Establishment" ON "Bar".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Bar".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
-# 	sqlQueryHotel = 'SELECT DISTINCT * FROM "Hotel" JOIN "Establishment" ON "Hotel".establishment_id = "Establishment".id JOIN "EstablishmentTags" on "Hotel".establishment_id = "EstablishmentTags".establishment_id WHERE "Establishment".name LIKE %s;'
-# 	if len(tags) != 0:
-# 		sqlQueryRestaurant = modifySqlQueryForTags(sqlQueryRestaurant, tags)
-# 		sqlQueryBar = modifySqlQueryForTags(sqlQueryBar, tags)
-# 		sqlQueryHotel = modifySqlQueryForTags(sqlQueryHotel, tags)
-# 	if 'restaurants' in establishments:
-# 		search_restaurants_list = list(set(Restaurant.objects.raw(sqlQueryRestaurant, [name_field])))
-# 	if 'bars' in establishments:
-# 		search_bars_list = list(set(Bar.objects.raw(sqlQueryBar, [name_field])))
-# 	if 'hotels' in establishments:
-# 		search_hotels_list = list(set(Hotel.objects.raw(sqlQueryHotel, [name_field])))
-# 	context = {'all_restaurants_list': search_restaurants_list, 'all_bars_list': search_bars_list, 'all_hotels_list': search_hotels_list, 'title': 'Search results:'}
-# 	return render(request, 'establishments/index.html', context)
-
-
-# def results(request):
-# 	if 'name' or 'establishments' or 'tags' in request.GET:
-# 		form = SearchForm(request.GET)
-# 		if form.is_valid():
-# 			name_field = form.cleaned_data['name']
-# 			name_field = '%'+name_field+'%'
-# 			establishments = form.cleaned_data['establishments']
-# 			tags = form.cleaned_data['tags']
-# 			return search_results(request,name_field, establishments, tags)
-# 	else:
-# 		form = SearchForm()
-# 	context['form'] = form
-# 	return render(request, 'establishments/index.html', context)
-
-# def getSqlQueryFromList(givenList, sqlQuery):
-# 	i=0
-# 	for element in givenList:
-# 		if i != 0:
-# 			sqlQuery += ', '
-# 		sqlQuery += "'"+element+"'"
-# 		i+=1
-# 	sqlQuery+=')'
-# 	return sqlQuery
+def getSqlQueryFromList(givenList, sqlQuery):
+	i=0
+	for element in givenList:
+		if i != 0:
+			sqlQuery += ', '
+		sqlQuery += "'"+element+"'"
+		i+=1
+	sqlQuery+=')'
+	return sqlQuery
 	
-# def modifySqlQueryForTags(sqlQuery, tags):
-# 	sqlQuery = sqlQuery[:len(sqlQuery)-1]
-# 	sqlQuery += ' AND "EstablishmentTags".tag_name IN ('
-# 	sqlQuery = getSqlQueryFromList(tags, sqlQuery)
-# 	sqlQuery += ';'
-# 	return sqlQuery
+def modifySqlQueryForTags(sqlQuery, tags):
+	sqlQuery = sqlQuery[:len(sqlQuery)-1]
+	sqlQuery += ' AND "EstablishmentTags".tag_name IN ('
+	sqlQuery = getSqlQueryFromList(tags, sqlQuery)
+	sqlQuery += ';'
+	return sqlQuery
 
-# def addTest(request):
-# 	# if this is a POST request we need to process the form data
-#     if request.method == 'POST':
-#         # create a form instance and populate it with data from the request:
-#         form = HotelForm(request.POST)
-#         # check whether it's valid:
-#         if form.is_valid():
-#             # process the data in form.cleaned_data as required
-#             # We will call the INSERT sql method here to add infos to the DB
-#             return HttpResponse("Fine")
+def addTest(request):
+	# if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = HotelForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # We will call the INSERT sql method here to add infos to the DB
+            return HttpResponse("Fine")
 
-#     # if a GET (or any other method) we'll create a blank form
-#     else:
-#         form = HotelForm()
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = HotelForm()
 
-#     return render(request, 'establishments/addTest.html', {'form': form})
+    return render(request, 'establishments/addTest.html', {'form': form})
