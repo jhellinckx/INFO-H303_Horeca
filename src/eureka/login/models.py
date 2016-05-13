@@ -47,6 +47,14 @@ class UserDBManager(BaseDBManager):
 			return False
 		return True
 
+	def delete(self, username):
+		try:
+			with connection.cursor() as c:
+				c.execute('DELETE FROM "User" WHERE name=%s;',[username])
+		except IntegrityError as e:
+			return False
+		return True
+
 class User(object):
 
 	db = UserDBManager()

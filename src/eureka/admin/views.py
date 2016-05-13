@@ -236,5 +236,10 @@ def edit_user(request, username):
 def delete_user(request, username):
 	(context, user, res) = check_admin(request)
 	if res : return res
+	success = User.db.delete(username)
+	if success :
+		return redirect('users.views.index')
+	else:
+		return redirect("/users/"+username)
 
 
