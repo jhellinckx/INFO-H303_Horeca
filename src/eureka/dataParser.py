@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python
 # -*- coding: UTF-8 -*-
 
 import xml.etree.ElementTree as ET
@@ -12,14 +12,14 @@ TAGS = []
 DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 def parseCafes():
-	tree = ET.parse('Cafes.xml')
+	tree = ET.parse('xml/Cafes.xml')
 	Cafes = tree.getroot()
 
 	for cafe in Cafes.findall("Cafe"):
 		parseCafesInfos(cafe)
 
 def parseRestaurants():
-	tree = ET.parse('Restaurants.xml')
+	tree = ET.parse('xml/Restaurants.xml')
 	Restaurants = tree.getroot()
 	for restaurant in Restaurants.findall("Restaurant"):
 		parseRestaurantsInfos(restaurant)

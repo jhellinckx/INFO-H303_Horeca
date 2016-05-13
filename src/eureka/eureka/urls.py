@@ -18,8 +18,7 @@ from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
-	url(r'^login/', include("login.urls")),
-    url(r'^admin/', include(admin.site.urls)),
+	url(r'^authenticate/', include("login.urls")),
     url(r'^establishments/', include("establishments.urls")),
 ]
 
