@@ -7,17 +7,24 @@ from login.models import *
 from .forms import *
 
 def _login(request, user):
-	request.session["user"] = user
+	request.session["username"] = user.name
+
+def get_user(request):
+	user = None
+	if request.session.has_key("username"):
+		user = User.db.get(request.session["username"])
+	return user
 
 def login(request):
-	if(request.session.has_key("user")):
+	user = get_user(request)
+	if user != None:
 		return HttpResponse("Already logged in")
 	if request.method == 'POST':
 		form = LoginForm(request.POST)
 		if form.is_valid() :
 			username = form.cleaned_data['username']
 			password = form.cleaned_data['password']
-			user = User.db.get(username, password)
+			user = User.db.get_with_password(username, password)
 			if user == None :
 				form.add_error(None, "error")
 				context = {"form" : form}
@@ -25,12 +32,34 @@ def login(request):
 			else :
 				_login(request, user)
 				return redirect("establishments.views.index")
+		else:
+			form.add_error(None, "error")
+			context = {"form" : form}
+			return render(request, 'login/login.html', context)		
 	else :
 		context	= {"form" : LoginForm()}
 		return render(request, 'login/login.html', context)
 
 def register(request):
 	if request.method == 'POST':
-		return HttpResponse("TODO")
+		form = RegisterForm(request.POST)
+		if form.is_valid():
+			username = form.cleaned_data['username']
+			password = form.cleaned_data['password']
+			email = form.cleaned_data['email']
+			if User.db.get(username) == None :
+				User.db.create_user(username, email, password, False)	
+				return redirect("login.views.login")
+			else:
+				form.add_error(None, "error")
+				context = {"form" : form}
+				return render(request, 'login/register.html', context)
+
+		else:
+			form.add_error(None, "error")
+			context = {"form" : form}
+			return render(request, 'login/register.html', context)
+
 	else :
-		return HttpResponse("TODO")
+		context = {"form" : RegisterForm()}
+		return render(request, 'login/register.html', context)
