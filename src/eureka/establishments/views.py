@@ -20,11 +20,14 @@ def index(request):
 	addSearchForm(request, context)
 	return render(request, 'establishments/index.html', context)
 
-def getEstablishmentContext(specific_establishment, establishment_id):
-	context = {'name': specific_establishment.name, 'phone_number': specific_establishment.phone_number, 'address_street': specific_establishment.address_street, 'address_number': specific_establishment.address_number, 'address_postcode': specific_establishment.address_postcode, 'address_locality': specific_establishment.address_locality, 'gps_longitude': specific_establishment.gps_longitude, 'gps_latitude': specific_establishment.gps_latitude, 'creator_name': specific_establishment.creator_name, 'created_time': specific_establishment.created_time}
-	if specific_establishment.website != "None":
-		context['website'] = specific_establishment.website
-	
+def getEstablishmentContext(context, request, establishment_id):
+	#context = {'name': specific_establishment.name, 'phone_number': specific_establishment.phone_number, 'address_street': specific_establishment.address_street, 'address_number': specific_establishment.address_number, 'address_postcode': specific_establishment.address_postcode, 'address_locality': specific_establishment.address_locality, 'gps_longitude': specific_establishment.gps_longitude, 'gps_latitude': specific_establishment.gps_latitude, 'creator_name': specific_establishment.creator_name, 'created_time': specific_establishment.created_time}
+	#if specific_establishment.website != "None":
+	#	context['website'] = specific_establishment.website
+	getTagsContext(context, establishment_id)
+	getCommentsContext(context, establishment_id)
+	getAverageScoreEstablishmentContext(context, establishment_id)
+	addCommentForm(request, context)
 	return context
 
 def getCommentsContext(context, establishment_id):
@@ -62,11 +65,8 @@ def restaurant_detail(request, establishment_id):
 	if restaurant == None : 
 		raise Http404("Restaurant does not exist")
 	context = {"establishment" : restaurant}
-	getTagsContext(context, establishment_id)
-	getCommentsContext(context, establishment_id)
-	getAverageScoreEstablishmentContext(context, establishment_id)
 	getRestaurantClosuresContext(context, establishment_id)
-	addCommentForm(request, context)
+	getEstablishmentContext(context, request, establishment_id)
 	return render(request, 'establishments/restaurant_detail.html', context)
 
 def getRestaurantClosuresContext(context, establishment_id):
@@ -79,7 +79,7 @@ def bar_detail(request, establishment_id):
 	if bar == None :
 		raise Http404("Bar does not exist")
 	context = {"establishment" : bar}
-	addCommentForm(request, context)
+	getEstablishmentContext(context, request, establishment_id)
 	return render(request, 'establishments/bar_detail.html', context)
 
 def hotel_detail(request, establishment_id):
@@ -87,7 +87,7 @@ def hotel_detail(request, establishment_id):
 	if hotel == None :
 		raise Http404("Hotel does not exist")
 	context = {"establishment" : hotel}
-	addCommentForm(request, context)
+	getEstablishmentContext(context, request, establishment_id)
 	return render(request, 'establishments/hotel_detail.html', context)
 
 def addSearchForm(request, context):
