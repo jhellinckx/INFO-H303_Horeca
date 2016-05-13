@@ -15,11 +15,11 @@ from establishments.forms import *
 from comments.forms import EstablishmentCommentForm
 
 def index(request):
-
-	all_restaurants_list = Restaurant.db.get_all()
-	all_bars_list = Bar.db.get_all()
-	all_hotels_list = Hotel.db.get_all()
-	context = {'all_restaurants_list': all_restaurants_list, 'all_bars_list': all_bars_list, 'all_hotels_list': all_hotels_list}
+	context = user_context(request)
+	user = context["user"]
+	context["all_restaurants_list"] = Restaurant.db.get_all()
+	context["all_bars_list"] = Bar.db.get_all()
+	context["all_hotels_list"] = Hotel.db.get_all()
 	addSearchForm(request, context)
 	return render(request, 'establishments/index.html', context)
 
@@ -61,10 +61,12 @@ def getTagsContext(context, establishment_id): #same as getCommentsContext
 		context['tags_score'] = tags_score
 
 def restaurant_detail(request, establishment_id):
+	context = user_context(request)
+	user = context["user"]
 	restaurant = Restaurant.db.get_by_id(establishment_id)
 	if restaurant == None : 
 		raise Http404("Restaurant does not exist")
-	context = {"establishment" : restaurant}
+	context["establishment"] = restaurant
 	getRestaurantClosuresContext(context, establishment_id)
 	getEstablishmentContext(context, request, establishment_id)
 	return render(request, 'establishments/restaurant_detail.html', context)
@@ -75,18 +77,22 @@ def getRestaurantClosuresContext(context, establishment_id):
 		context["closures"] = closures
 
 def bar_detail(request, establishment_id):
+	context = user_context(request)
+	user = context["user"]
 	bar = Bar.db.get_by_id(establishment_id)
 	if bar == None :
 		raise Http404("Bar does not exist")
-	context = {"establishment" : bar}
+	context["establishment"] = bar
 	getEstablishmentContext(context, request, establishment_id)
 	return render(request, 'establishments/bar_detail.html', context)
 
 def hotel_detail(request, establishment_id):
+	context = user_context(request)
+	user = context["user"]
 	hotel = Hotel.db.get_by_id(establishment_id)
 	if hotel == None :
 		raise Http404("Hotel does not exist")
-	context = {"establishment" : hotel}
+	context["establishment"] = hotel
 	getEstablishmentContext(context, request, establishment_id)
 	return render(request, 'establishments/hotel_detail.html', context)
 
@@ -132,7 +138,12 @@ def search_results(request, name_field, establishments, tags): #For tags, return
 		if 'hotels' in establishments:
 			c.execute(sqlQueryHotel, [name_field])
 			search_hotels_list = [Hotel.from_db(d) for d in manager.fetch_dicts(c)]
-	context = {'all_restaurants_list': search_restaurants_list, 'all_bars_list': search_bars_list, 'all_hotels_list': search_hotels_list, 'title': 'Search results:'}
+	context = user_context(request)
+	user = context["user"]
+	context["all_restaurants_list"] = search_restaurants_list
+	context["all_bars_list"] = search_bars_list
+	context["all_hotels_list"] = search_hotels_list
+	context["title"] = 'Search results:'
 	return render(request, 'establishments/index.html', context)
 
 
@@ -147,6 +158,8 @@ def results(request):
 			return search_results(request,name_field, establishments, tags)
 	else:
 		form = SearchForm()
+	context = user_context(request)
+	user = context["user"]
 	context['form'] = form
 	return render(request, 'establishments/index.html', context)
 
