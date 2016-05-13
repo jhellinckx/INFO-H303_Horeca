@@ -23,20 +23,18 @@ def getEstablishmentContext(specific_establishment, establishment_id):
 	context = {'name': specific_establishment.name, 'phone_number': specific_establishment.phone_number, 'address_street': specific_establishment.address_street, 'address_number': specific_establishment.address_number, 'address_postcode': specific_establishment.address_postcode, 'address_locality': specific_establishment.address_locality, 'gps_longitude': specific_establishment.gps_longitude, 'gps_latitude': specific_establishment.gps_latitude, 'creator_name': specific_establishment.creator_name, 'created_time': specific_establishment.created_time}
 	if specific_establishment.website != "None":
 		context['website'] = specific_establishment.website
-	#getTagsContext(context, establishment_id)
-	#getCommentsContext(context, establishment_id)
-	getAverageScoreEstablishmentContext(context, establishment_id)
+	
 	return context
 
-# def getCommentsContext(context, establishment_id): #Need to use this manual connection to db to handle the primary key problem
-# 	comments_list = []
-# 	with connection.cursor() as cursor:
-# 		cursor.execute('SELECT written_date,score,comment_text,user_name,establishment_id FROM "EstablishmentComment" WHERE establishment_id = %s;', [establishment_id])
-# 		for row in cursor.fetchall():
-# 			estCom = Establishmentcomment(written_date=row[0], score=row[1], comment_text=row[2], user_name=User.objects.get(name=row[3]), establishment_id=Establishment.objects.get(id=row[4]))
-# 			comments_list.append(estCom)
-# 	if len(comments_list) != 0:
-# 		context['comments_list'] = comments_list
+def getCommentsContext(context, establishment_id):
+	comments_list = []
+	with connection.cursor() as cursor:
+		cursor.execute('SELECT written_date,score,comment_text,user_name,establishment_id FROM "EstablishmentComment" WHERE establishment_id = %s;', [establishment_id])
+		for row in cursor.fetchall():
+			estCom = Establishmentcomment(written_date=row[0], score=row[1], comment_text=row[2], user_name=User.objects.get(name=row[3]), establishment_id=Establishment.objects.get(id=row[4]))
+			comments_list.append(estCom)
+	if len(comments_list) != 0:
+		context['comments_list'] = comments_list
 
 def getAverageScoreEstablishmentContext(context, establishment_id):
 	averageScore = -1
@@ -47,35 +45,34 @@ def getAverageScoreEstablishmentContext(context, establishment_id):
 	if averageScore != -1 and averageScore != None:
 		context['average_score'] = "{0:.2f}".format(averageScore)
 
-# def getTagsContext(context, establishment_id): #same as getCommentsContext
-# 	tags_list = []
-# 	tag_names_in_list = []
-# 	tags_score = {}
-# 	with connection.cursor() as cursor:
-# 		cursor.execute('SELECT establishment_id, tag_name, user_name FROM "EstablishmentTags" WHERE establishment_id = %s;', [establishment_id])
-# 		for row in cursor.fetchall():
-# 			if row[1] not in tag_names_in_list:
-# 				estTag = Establishmenttags(establishment_id=Establishment.objects.get(id=row[0]), tag_name=Tag.objects.get(name=row[1]), user_name=User.objects.get(name=row[2]))
-# 				tags_list.append(estTag)
-# 				tag_names_in_list.append(row[1])
-# 				tags_score[row[1]] = 1
-# 			else:
-# 				tags_score[row[1]] += 1
-# 	if len(tags_list) != 0 and len(tags_score) != 0:
-# 		context['tags_list'] = tags_list
-# 		context['tags_score'] = tags_score
+def getTagsContext(context, establishment_id): #same as getCommentsContext
+	tags = EstablishmentTag.db.get_by_establishment(establishment_id)
+	unique_tags_names = []
+	unique_tags = []
+	tags_score = {}
+	for tag in tags :
+		if tag.tag_name not in unique_tags_names:
+			unique_tags.append(tag)
+			unique_tags_names.append(tag.tag_name)
+			tags_score[tag.tag_name] = 1
+		else:
+			tags_score[tag.tag_name] += 1
+	if(len(unique_tags) != 0):
+		context['tags_list'] = unique_tags
+		context['tags_score'] = tags_score
 
 def restaurant_detail(request, establishment_id):
-
 	restaurant = Restaurant.db.get_by_id(establishment_id)
 	if restaurant == None : 
 		raise Http404("Establishment does not exist")
-	context = getEstablishmentContext(restaurant, establishment_id)
+	context = {"establishment" : restaurant}
+	getTagsContext(context, establishment_id)
+	getCommentsContext(context, establishment_id)
+	getAverageScoreEstablishmentContext(context, establishment_id)
+
+	
+
 	#getRestaurantClosuresContext(context, establishment_id)
-	context["price_range"] = restaurant.price_range
-	context["banquet_capacity"] = restaurant.banquet_capacity
-	context["take_away"] = "Yes" if restaurant.take_away else "No"
-	context["delivery"] = "Yes" if restaurant.delivery else "No"
 	
 	return render(request, 'establishments/restaurant_detail.html', context)
 

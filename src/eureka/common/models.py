@@ -10,4 +10,5 @@ class BaseDBManager(object):
 
 	def fetch_dict(self, cursor):
 		columns = [col[0] for col in cursor.description]
-		return dict(zip(columns, cursor.fetchone()))
+		row = cursor.fetchone()
+		return dict(zip(columns, row)) if row != None else None 

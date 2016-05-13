@@ -11,7 +11,8 @@ class EstablishmentDBManager(BaseDBManager):
     def get_by_id(self, establishment_id):
         with connection.cursor() as c:
             c.execute('SELECT * FROM \"' + self.model().table + '\" JOIN "Establishment" ON id=establishment_id WHERE establishment_id=%s;', [establishment_id])
-            return self.model().from_db(self.fetch_dict(c))
+            d = self.fetch_dict(c)
+            return self.model().from_db(d) if d != None else None
 
     def model(self):
         raise NotImplementedError

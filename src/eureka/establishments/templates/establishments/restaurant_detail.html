@@ -1,7 +1,7 @@
 {% extends "establishments/establishment_detail.html" %}
 
 {% block establishment_name %}
-<h1> Restaurant: {{ name }} </h1>
+<h1> Restaurant: {{ establishment.name }} </h1>
 {% endblock %}
 
 {% block specific_infos %}
@@ -15,8 +15,18 @@
 {% else %}
 	None. This restaurant is always open!
 {% endif %}
-<h3> Price range: {{price_range}} </h3>
-<h3> Banquet capacity: {{banquet_capacity}} </h3>
-<h3> Take Away: {{take_away}} </h3>
-<h3> Delivery: {{delivery}} </h3>
+<h3> Price range: {{establishment.price_range}} </h3>
+<h3> Banquet capacity: {{establishment.banquet_capacity}} </h3>
+
+{% if establishment.take_away %}
+<h3> Take Away: Yes </h3>
+{% else %}
+<h3> Take Away: No </h3>
+{% endif %}
+
+{% if establishment.delivery %}
+<h3> Delivery: Yes </h3>
+{% else %}
+<h3> Delivery: No </h3>
+{% endif %}
  {% endblock %}

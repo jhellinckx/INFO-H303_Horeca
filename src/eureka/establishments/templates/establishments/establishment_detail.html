@@ -1,29 +1,29 @@
 {% load dictionary_tag %}
 {% block establishment_name %}
-<h1> Establishment: {{ name }} </h1>
+<h1> Establishment: {{ establishment.name }} </h1>
 {% endblock %}
 
-<h2> Tel: {{ phone_number }} <h2>
+<h2> Tel: {{ establishment.phone_number }} <h2>
 
-{% if website %}
-<h2> Website : <a href=http://{{website}}>{{ website }} </a></h2>
+{% if establishment.website %}
+<h2> Website : <a href=http://{{website}}>{{ establishment.website }} </a></h2>
 {% endif %}
 
 <h3> Address: </h3>
 <ul>
-	<li> Street: {{ address_street }} </li>
-	<li> Number: {{ address_number }} </li>
-	<li> Post code: {{ address_postcode }} </li>
-	<li> Locality: {{ address_locality }} </li>
-	<li> Longitude: {{ gps_longitude }} </li>
-	<li> Latitude: {{ gps_latitude }} </li>
+	<li> Street: {{ establishment.address_street }} </li>
+	<li> Number: {{ establishment.address_number }} </li>
+	<li> Post code: {{ establishment.address_postcode }} </li>
+	<li> Locality: {{ establishment.address_locality }} </li>
+	<li> Longitude: {{ establishment.gps_longitude }} </li>
+	<li> Latitude: {{ establishment.gps_latitude }} </li>
 </ul>
 
 <h3> Tags: </h3>
 {% if tags_list %}
 	<ul>
 	{% for tag in tags_list %}
-		<li> {{ tag.tag_name.name }} x{{ tags_score|get_item:tag.tag_name.name }}</li>
+		<li> {{ tag.tag_name }} x{{ tags_score|get_item:tag.tag_name }}</li>
 	{% endfor %}
 	</ul>
 {% endif %}
@@ -53,4 +53,4 @@
 LoL
 {% endblock %}
 
-Created by: {{ creator_name}}, on {{ created_time}}.
+Created by: {{ establishment.creator_name}}, on {{ establishment.created_time}}.
