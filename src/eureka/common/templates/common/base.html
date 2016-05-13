@@ -13,6 +13,9 @@
   		{% else %}
   			<a href="{% url 'login.views.login' %}">Log in</a>
   		{% endif %}
+  		{% if user and user.is_admin %}
+  			<a href="{% url 'admin.views.index' %}">Admin</a>
+  		{% endif %}
   	</nav>
     {% block content %}
     {% endblock %}
