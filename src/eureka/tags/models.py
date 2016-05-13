@@ -8,12 +8,20 @@ class TagDBManager(BaseDBManager):
             c.execute('SELECT * FROM "Tag";')
             return [Tag.from_db(d) for d in self.fetch_dicts(c)]
 
+    def insert(self, name):
+        with connection.cursor() as c:
+            c.execute('INSERT INTO "Tag" VALUES (%s);', [name])
+
 class EstablishmentTagDBManager(BaseDBManager):
 
     def get_by_establishment(self, establishment_id):
         with connection.cursor() as c:
             c.execute('SELECT establishment_id, tag_name, user_name FROM "EstablishmentTags" WHERE establishment_id = %s;', [establishment_id])
             return [EstablishmentTag.from_db(d) for d in self.fetch_dicts(c)]
+
+    def insert(self, establishment_id, tag_name, user_name):
+        with connection.cursor() as c:
+            c.execute('INSERT INTO "EstablishmentTags" VALUES (%s, %s, %s);', [establishment_id, tag_name, user_name])
 
 
 class Tag(object):
