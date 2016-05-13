@@ -1,0 +1,24 @@
+{% extends "admin/create_establishment.html" %}
+
+{% block specific_establishment_post %}
+	<form method="post" action="{% url 'admin.views.create_restaurant' %}">
+{% endblock %}
+
+{% block specific_establishment_form %}
+	<tr>
+	    <td>{{ form.price_range.label_tag }}</td>
+	    <td>{{ form.price_range }}</td>
+	</tr>
+	<tr>
+	    <td>{{ form.banquet_capacity.label_tag }}</td>
+	    <td>{{ form.banquet_capacity }}</td>
+	</tr>
+	<tr>
+	    <td>{{ form.take_away.label_tag }}</td>
+	    <td>{{ form.take_away }}</td>
+	</tr>
+	<tr>
+	    <td>{{ form.delivery.label_tag }}</td>
+	    <td>{{ form.delivery }}</td>
+	</tr>
+{% endblock %}

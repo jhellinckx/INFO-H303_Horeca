@@ -58,19 +58,12 @@ def register(request):
 			username = form.cleaned_data['username']
 			password = form.cleaned_data['password']
 			email = form.cleaned_data['email']
-			if User.db.get(username) == None :
-				User.db.create_user(username, email, password, False)	
+			success = User.db.create_user(username, email, password, False)	
+			if success:
 				return redirect("login.views.login")
-			else:
-				form.add_error(None, "error")
-				context["form"] = form
-				return render(request, 'login/register.html', context)
-
-		else:
-			form.add_error(None, "error")
-			context["form"] = form
-			return render(request, 'login/register.html', context)
-
+		form.add_error(None, "error")
+		context["form"] = form
+		return render(request, 'login/register.html', context)
 	else :
 		context["form"] = RegisterForm()
 		return render(request, 'login/register.html', context)

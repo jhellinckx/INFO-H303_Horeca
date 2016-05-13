@@ -1,4 +1,5 @@
 from django.db import connection
+from django.db import IntegrityError
 from common.models import BaseDBManager
 import time 
 
@@ -23,20 +24,13 @@ class UserDBManager(BaseDBManager):
 
 	def create_user(self, name, email, password, is_admin=False):
 		date = time.strftime('%Y-%m-%d %H:%M:%S')
-		is_admin = str(int(is_admin))
+		#is_admin = str(int(is_admin))
 		with connection.cursor() as c:
-			c.execute('INSERT INTO "User" VALUES(%s, %s, %s, %s, %s)',[name, email, password, date, is_admin])
-
-	def check_required(self, name, email, password, signup_date):
-		if not name:
-			raise ValueError("Users must have an username")
-		if not email:
-			raise ValueError("Users must have an email address")
-		if not password:
-			raise ValueError("Users must have a password")
-		if not signup_date:
-			raise ValueError("Users must have a signup date")
-
+			try:
+				c.execute('INSERT INTO "User" VALUES(%s, %s, %s, %s, %s)',[name, email, password, date, is_admin])
+			except IntegrityError as e:
+				return False
+		return True
 
 class User(object):
 

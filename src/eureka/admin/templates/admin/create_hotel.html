@@ -1,0 +1,20 @@
+{% extends "admin/create_establishment.html" %}
+
+{% block specific_establishment_post %}
+	<form method="post" action="{% url 'admin.views.create_hotel' %}">
+{% endblock %}
+
+{% block specific_establishment_form %}
+	<tr>
+	    <td>{{ form.price_range.label_tag }}</td>
+	    <td>{{ form.price_range }}</td>
+	</tr>
+	<tr>
+	    <td>{{ form.stars.label_tag }}</td>
+	    <td>{{ form.stars }}</td>
+	</tr>
+	<tr>
+	    <td>{{ form.rooms_number.label_tag }}</td>
+	    <td>{{ form.rooms_number }}</td>
+	</tr>
+{% endblock %}
