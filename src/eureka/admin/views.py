@@ -80,7 +80,19 @@ def create_user(request):
 	(context, user, res) = check_admin(request)
 	if res : return res
 	if request.method == 'POST':
-		return HttpResponse("TODO")
+		form = RegisterForm(request.POST)
+		if form.is_valid():
+			username = form.cleaned_data['username']
+			password = form.cleaned_data['password']
+			email = form.cleaned_data['email']
+			is_admin = form.cleaned_data['is_admin']
+			success = User.db.create_user(username, email, password, is_admin)	
+			if success :
+				return HttpResponse("CREATION SUCCESSFUL : TODO : DISPLAY USER")
+		form.add_error(None, "error")
+		context["form"] = form
+		return render(request, 'admin/create_user.html', context)
 	else:
+		context['form'] = RegisterForm()
 		return render(request, 'admin/create_user.html', context)
 

@@ -1,7 +1,7 @@
 from django.db import connection
+from django.db import IntegrityError
 from common.models import BaseDBManager
 import time
-import psycopg2
 class EstablishmentDBManager(BaseDBManager):
 
     def get_all(self):
@@ -36,7 +36,7 @@ class EstablishmentDBManager(BaseDBManager):
                         created_time
                     ])
                 return c.fetchone()[0]
-        except psycopg2.IntegrityError as e:
+        except IntegrityError as e:
             return -1
 
     def model(self):
@@ -62,7 +62,7 @@ class HotelDBManager(EstablishmentDBManager):
                             form_dict["price_range"],
                             establishment_id
                         ])
-            except psycopg2.IntegrityError as e:
+            except IntegrityError as e:
                 return (False, establishment_id)
         return (True, establishment_id)
 
@@ -85,7 +85,7 @@ class BarDBManager(EstablishmentDBManager):
                             form_dict["snack"],
                             establishment_id
                         ])
-            except psycopg2.IntegrityError as e:
+            except IntegrityError as e:
                 return (False, establishment_id)
         return (True, establishment_id)
 
@@ -113,7 +113,7 @@ class RestaurantDBManager(EstablishmentDBManager):
                             form_dict["delivery"],
                             establishment_id
                         ])
-            except psycopg2.IntegrityError as e:
+            except IntegrityError as e:
                 return (False, establishment_id)
         return (True, establishment_id)
 
