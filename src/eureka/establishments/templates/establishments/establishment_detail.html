@@ -1,3 +1,10 @@
+{% load staticfiles %}
+<html>
+  <head>
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}"
+          rel="stylesheet">
+  </head>
+
 {% load dictionary_tag %}
 {% block establishment_name %}
 <h1> Establishment: {{ establishment.name }} </h1>
@@ -54,3 +61,4 @@ LoL
 {% endblock %}
 
 Created by: {{ establishment.creator_name}}, on {{ establishment.created_time}}.
+</html>
