@@ -1,28 +1,41 @@
 from django.db import connection
 from common.models import BaseDBManager
 
-class HotelDBManager(BaseDBManager):
-    def get_all(self):
-        with connection.cursor() as c:
-            c.execute('SELECT * FROM "Hotel" JOIN "Establishment" ON id=establishment_id;')
-            return [Hotel.from_db(d) for d in self.fetch_dicts(c)]
+class EstablishmentDBManager(BaseDBManager):
 
-class BarDBManager(BaseDBManager):
     def get_all(self):
         with connection.cursor() as c:
-            c.execute('SELECT * FROM "Bar" JOIN "Establishment" ON id=establishment_id;')
-            return [Bar.from_db(d) for d in self.fetch_dicts(c)]
+            c.execute('SELECT * FROM \"' + self.model().table + '\" JOIN "Establishment" ON id=establishment_id;')
+            return [self.model().from_db(d) for d in self.fetch_dicts(c)]
 
-class RestaurantDBManager(BaseDBManager):
-    def get_all(self):
+    def get_by_id(self, establishment_id):
         with connection.cursor() as c:
-            c.execute('SELECT * FROM "Restaurant" JOIN "Establishment" ON id=establishment_id;')
-            return [Restaurant.from_db(d) for d in self.fetch_dicts(c)]
+            c.execute('SELECT * FROM \"' + self.model().table + '\" JOIN "Establishment" ON id=establishment_id WHERE establishment_id=%s;', [establishment_id])
+            return self.model().from_db(self.fetch_dict(c))
+
+    def model(self):
+        raise NotImplementedError
+
+
+class HotelDBManager(EstablishmentDBManager):
+    def model(self):
+        return Hotel
+
+
+class BarDBManager(EstablishmentDBManager):
+    def model(self):
+        return Bar
+
+class RestaurantDBManager(EstablishmentDBManager):
+    def model(self):
+        return Restaurant
 
 class RestaurantClosuresDBManager(BaseDBManager):
     pass
 
 class Establishment(object):
+
+    table = 'Establishment'
  
     def populate(self, db_dict):
         self.name = db_dict["name"]
@@ -39,6 +52,7 @@ class Establishment(object):
 
 class Hotel(Establishment):
 
+    table = 'Hotel'
     db = HotelDBManager()
 
     def __init__(self, establishment_id, stars, rooms_number, price_range):
@@ -57,6 +71,7 @@ class Hotel(Establishment):
 
 class Bar(Establishment):
 
+    table = 'Bar'
     db = BarDBManager()
 
     def __init__(self, establishment_id, smoking, snack):
@@ -73,6 +88,7 @@ class Bar(Establishment):
 
 class Restaurant(Establishment):
 
+    table = 'Restaurant'
     db = RestaurantDBManager()
 
     def __init__(self, establishment_id, price_range, banquet_capacity, take_away, delivery):
