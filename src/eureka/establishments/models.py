@@ -185,6 +185,9 @@ class RestaurantDBManager(EstablishmentDBManager):
                         ])
             except IntegrityError as e:
                 return (False, establishment_id)
+            success = RestaurantClosures.db.create_from_dict(form_dict, establishment_id)
+            if not success:
+                return (False, establishment_id)
         return (True, establishment_id)
 
     def edit_from_dict(self, form_dict, establishment_id):
@@ -299,12 +302,32 @@ class Restaurant(Establishment):
     def get_dict(self):
         return self.db_dict
 
+DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 class RestaurantClosuresDBManager(BaseDBManager):
+    
     def get_by_establishment(self, establishment_id):
         with connection.cursor() as c :
             c.execute('SELECT day, am, pm, establishment_id FROM "RestaurantClosures" WHERE establishment_id = %s', [establishment_id])
             return [RestaurantClosures.from_db(d) for d in self.fetch_dicts(c)]
+
+    def create_from_dict(self, form_dict, establishment_id):
+        try:
+            with connection.cursor() as c:
+                for day in DAY_NAMES:
+                    day = day.lower()
+                    am = "am" in form_dict[day]
+                    pm = "pm" in form_dict[day]
+                    c.execute('INSERT INTO "RestaurantClosures" (day, am, pm, establishment_id) VALUES(%s,%s,%s,%s)',\
+                        [
+                            day,
+                            am,
+                            pm,
+                            establishment_id
+                        ])
+        except IntegrityError as e:
+            return False
+        return True
 
 class RestaurantClosures(object):
     
