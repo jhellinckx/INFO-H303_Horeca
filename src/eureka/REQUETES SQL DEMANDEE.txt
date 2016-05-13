@@ -33,3 +33,5 @@ SELECT e.id FROM "Establishment" e, "EstablishmentComment" ec WHERE e.id = ec.es
 -------------------------------------------------
 
 R6: #TODO: l'ancienne était mauvaise, il faut bien prendre les Tags présents 5 fois mais sur des établissements distincts
+
+SELECT t.name FROM "Tag" t,  "EstablishmentTags" et JOIN (SELECT ec.establishment_id, avg(ec.score) as avgscore FROM "EstablishmentComment" ec GROUP BY ec.establishment_id) avg1 ON (et.establishment_id = avg1.establishment_id) WHERE t.name = et.tag_name AND (SELECT count(DISTINCT et2.establishment_id) FROM "EstablishmentTags" et2 WHERE et2.tag_name = et.tag_name) >=5 GROUP BY(t.name) ORDER BY avg(avg1.avgscore) DESC;
