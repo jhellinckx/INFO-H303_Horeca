@@ -1,0 +1,15 @@
+{% extends "common/base.html" %}
+
+{% block content %}
+
+<h2> Username : {{ searched_user.name }} </h1>
+<h3> Email : {{ searched_user.email }}</h2>
+
+{% if user and user.is_admin %}
+	<ul>
+		<li><a href="/admin/edit_user/{{ searched_user.name }}">Edit</a></li>
+		<li><a href="/admin/delete_user/{{ searched_user.name }}">Delete</a></li>
+	</ul>
+{% endif %}
+
+{% endblock %}

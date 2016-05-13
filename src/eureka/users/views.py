@@ -15,5 +15,6 @@ def user_detail(request, username):
 	user = context["user"]
 	searched_user = User.db.get(username)
 	if searched_user == None :
-		return Http404("Username does not exist")
+		raise Http404("Username does not exist")
+	context["searched_user"] = searched_user
 	return render(request, 'users/user_detail.html', context)
