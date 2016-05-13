@@ -22,7 +22,8 @@ def user_context(request):
 	return {"user" : get_user(request)}
 
 def login(request):
-	user = get_user(request)
+	context = user_context(request)
+	user = context["user"]
 	if user != None:
 		return HttpResponse("Already logged in")
 	if request.method == 'POST':
@@ -33,21 +34,22 @@ def login(request):
 			user = User.db.get_with_password(username, password)
 			if user == None :
 				form.add_error(None, "error")
-				context = {"form" : form}
+				context["form"] = form
 				return render(request, 'login/login.html', context)			
 			else :
 				_login(request, user)
 				return redirect("establishments.views.index")
 		else:
 			form.add_error(None, "error")
-			context = {"form" : form}
+			context["form"] = form
 			return render(request, 'login/login.html', context)		
 	else :
-		context	= {"form" : LoginForm()}
+		context["form"] = LoginForm()
 		return render(request, 'login/login.html', context)
 
 def register(request):
-	user = get_user(request)
+	context = user_context(request)
+	user = context["user"]
 	if user != None:
 		return HttpResponse("Already logged in")
 	if request.method == 'POST':
@@ -61,16 +63,16 @@ def register(request):
 				return redirect("login.views.login")
 			else:
 				form.add_error(None, "error")
-				context = {"form" : form}
+				context["form"] = form
 				return render(request, 'login/register.html', context)
 
 		else:
 			form.add_error(None, "error")
-			context = {"form" : form}
+			context["form"] = form
 			return render(request, 'login/register.html', context)
 
 	else :
-		context = {"form" : RegisterForm()}
+		context["form"] = RegisterForm()
 		return render(request, 'login/register.html', context)
 
 def logout(request):

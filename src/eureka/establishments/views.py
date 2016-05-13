@@ -8,11 +8,14 @@ from comments.models import EstablishmentComment
 from login.models import User
 from common.models import BaseDBManager
 
+from login.views import *
+
 from tags.forms import *
 from establishments.forms import *
 from comments.forms import EstablishmentCommentForm
 
 def index(request):
+
 	all_restaurants_list = Restaurant.db.get_all()
 	all_bars_list = Bar.db.get_all()
 	all_hotels_list = Hotel.db.get_all()
