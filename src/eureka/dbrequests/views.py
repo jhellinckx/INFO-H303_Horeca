@@ -9,6 +9,7 @@ from common.models import BaseDBManager
 
 from establishments.models import *
 from login.models import User
+from tags.models import Tag
 from .models import Request
 from login.views import *
 
@@ -32,13 +33,18 @@ R5Name = "R5: La liste des établissements ayant au minimum trois commentaires, 
 R5 = '''
 SELECT e.id FROM "Establishment" e, "EstablishmentComment" ec WHERE e.id = ec.establishment_id GROUP BY (e.id) HAVING count(ec.establishment_id) >= 3 ORDER BY avg(ec.score) DESC;'''
 
+R6Name = "R6: La liste des labels étant appliqués à au moins 5 établissements, classée selon la moyenne des scores des établissements ayant ce label."
+R6 = '''
+SELECT t.name FROM "Tag" t,  "EstablishmentTags" et JOIN (SELECT ec.establishment_id, avg(ec.score) as avgscore FROM "EstablishmentComment" ec GROUP BY ec.establishment_id) avg1 ON (et.establishment_id = avg1.establishment_id) WHERE t.name = et.tag_name AND (SELECT count(DISTINCT et2.establishment_id) FROM "EstablishmentTags" et2 WHERE et2.tag_name = et.tag_name) >=5 GROUP BY(t.name) ORDER BY avg(avg1.avgscore) DESC;'''
 REQUESTS_USERS = [Request(1,R1Name,R1), Request(4,R4Name, R4)]
 REQUESTS_ESTABLISHMENTS = [Request(2,R2Name, R2),  Request(3,R3Name, R3), Request(5,R5Name, R5)]
+REQUEST_TAG = Request(6, R6Name, R6)
 
 def index_requests(request):
 	context = user_context(request)
 	context['requests_users'] = REQUESTS_USERS
 	context['requests_establishments'] = REQUESTS_ESTABLISHMENTS
+	context['request_tag'] = REQUEST_TAG
 	return render(request, 'dbrequests/index_requests.html', context)
 
 
@@ -66,7 +72,17 @@ def users_request_detail(request, request_id):
 		manager = BaseDBManager()
 		c.execute(sqlQuery)
 		context["users_list"] = [User.from_db(d) for d in manager.fetch_dicts(c)]
-	return render(request, 'dbrequests/list_users.html', context)
+	return render(request, 'dbrequests/list_users_or_tags.html', context)
+
+def tag_request_detail(request, request_id):
+	context = user_context(request)
+	with connection.cursor() as c:
+		manager = BaseDBManager()
+		c.execute(REQUEST_TAG.request)
+		context["tags_list"] = [Tag.from_db(d) for d in manager.fetch_dicts(c)]
+	return render(request, 'dbrequests/list_users_or_tags.html', context)
+
+
 
 def getContextAndSqlQuery(request, requestList, request_id):
 	context = user_context(request)

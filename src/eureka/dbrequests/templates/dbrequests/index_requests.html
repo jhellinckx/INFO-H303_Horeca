@@ -19,4 +19,11 @@
 			{% endfor %}
 		</ul>
 		{% endif %}
+
+		{% if request_tag %}
+		<h3> Request returning Tags: </h3>
+		<ul>
+			<li><a href="/requests/tags/{{ request_tag.iD }}/"> {{ request_tag.name }} </a></li>
+		</ul>
+		{% endif %}
 	{% endblock %}
