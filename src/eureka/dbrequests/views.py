@@ -14,7 +14,7 @@ from login.views import *
 
 R1Name = "R1: Tous les utilisateurs qui apprécient au moins 3 établissements que l’utilisateur 'Brenda' apprécie."
 R1 = '''
-SELECT u.name FROM "User" u WHERE 3<= (SELECT count(ec2.user_name) FROM "EstablishmentComment" ec2 WHERE u.name = ec2.user_name AND ec2.score >= 4 AND ec2.establishment_id IN (SELECT DISTINCT e.id FROM "Establishment" e, "EstablishmentComment" ec WHERE e.id = ec.establishment_id AND ec.user_name = 'Brenda' and ec.score >= 4));'''
+SELECT * FROM "User" u WHERE 3<= (SELECT count(ec2.user_name) FROM "EstablishmentComment" ec2 WHERE u.name = ec2.user_name AND ec2.score >= 4 AND ec2.establishment_id IN (SELECT DISTINCT e.id FROM "Establishment" e, "EstablishmentComment" ec WHERE e.id = ec.establishment_id AND ec.user_name = 'Brenda' and ec.score >= 4));'''
 
 R2Name = "R2: Tous les établissements qu’apprécie au moins un utilisateur qui apprécie tous les établissements que 'Brenda' apprécie."
 R2 = '''
@@ -26,7 +26,7 @@ SELECT e.id FROM "Establishment" e WHERE (SELECT count(ec.establishment_id) FROM
 
 R4Name = "R4: La liste des administrateurs n’ayant pas commenté tous les établissements qu’ils ont crées."
 R4 = '''
-SELECT DISTINCT u.name FROM "User" u, "Establishment" e WHERE u.is_admin = 't' AND e.creator_name = u.name AND NOT EXISTS (SELECT * FROM "EstablishmentComment" ec WHERE ec.establishment_id = e.id AND ec.user_name = u.name);'''
+SELECT DISTINCT ON (u.name) u.name, u.email, u.password, u.signup_date, u.is_admin FROM "User" u, "Establishment" e WHERE u.is_admin = 't' AND e.creator_name = u.name AND NOT EXISTS (SELECT * FROM "EstablishmentComment" ec WHERE ec.establishment_id = e.id AND ec.user_name = u.name);'''
 
 R5Name = "R5: La liste des établissements ayant au minimum trois commentaires, classée selon la moyenne des scores attribués."
 R5 = '''
@@ -43,12 +43,7 @@ def index_requests(request):
 
 
 def establishments_request_detail(request, request_id):
-	context = user_context(request)
-	sqlQuery = ''' '''
-	for dbrequest in REQUESTS_ESTABLISHMENTS:
-		if dbrequest.iD == int(request_id):
-			sqlQuery = dbrequest.request
-	context["title"] = "Request results"
+	context, sqlQuery = getContextAndSqlQuery(request, REQUESTS_ESTABLISHMENTS, request_id)
 	with connection.cursor() as c:
 		manager = BaseDBManager()
 		restaurantQuery = ''' SELECT * FROM "Restaurant" r JOIN "Establishment" ON "Establishment".id=r.establishment_id WHERE r.establishment_id IN (''' + sqlQuery[:len(sqlQuery)-1] + ''');'''
@@ -64,3 +59,20 @@ def establishments_request_detail(request, request_id):
 		context["all_hotel_list"] = [Hotel.from_db(d) for d in manager.fetch_dicts(c)]
 
 	return render(request, 'establishments/index.html', context)
+
+def users_request_detail(request, request_id):
+	context, sqlQuery = getContextAndSqlQuery(request, REQUESTS_USERS, request_id)
+	with connection.cursor() as c:
+		manager = BaseDBManager()
+		c.execute(sqlQuery)
+		context["users_list"] = [User.from_db(d) for d in manager.fetch_dicts(c)]
+	return render(request, 'dbrequests/list_users.html', context)
+
+def getContextAndSqlQuery(request, requestList, request_id):
+	context = user_context(request)
+	sqlQuery = ''' '''
+	for dbrequest in requestList:
+		if dbrequest.iD == int(request_id):
+			sqlQuery = dbrequest.request
+	context["title"] = "Request results"
+	return context, sqlQuery
