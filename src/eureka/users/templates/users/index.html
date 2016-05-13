@@ -1,0 +1,14 @@
+{% extends "common/base.html" %}
+
+{% block content %}
+    <h1> All users in database: </h1>
+
+    {% if all_users_list %}
+        <ul>
+        {% for user in all_users_list %}
+            <li><a href="/users/{{ user.name }}/">{{ user.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+{% endblock %}
