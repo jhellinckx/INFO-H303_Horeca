@@ -108,7 +108,8 @@ def addSearchForm(request, context):
 			tags = form.cleaned_data['tags']
 			return search_results(request,name_field, establishments, tags)
 	else:
-		form = SearchForm()
+		all_tags = Tag.db.get_all()
+		form = SearchForm(all_tags)
 	context['form'] = form
 
 def addCommentForm(request, context={}, establishment_id=-1):
@@ -153,7 +154,8 @@ def addEstablishmentTagForm(request, context ={}, establishment_id=-1):
 		else:
 			HttpResponseRedirect('/authenticate/login')
 	else:
-		form = EstablishmentTagsForm(initial={'establishment_id': establishment_id})
+		all_tags = Tag.db.get_all()
+		form = EstablishmentTagsForm(tags=all_tags,initial={'establishment_id': establishment_id})
 	context['add_tags_form'] = form
 
 

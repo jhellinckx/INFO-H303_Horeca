@@ -15,8 +15,11 @@ class SearchForm(forms.Form):
 	for tag in all_tags:
 		TAG_OPTIONS = TAG_OPTIONS + ((tag.name, tag.name),)
 	establishments = forms.MultipleChoiceField(required = False, label= 'Establishments', widget=forms.CheckboxSelectMultiple, choices=EST_OPTIONS, initial=[c[0] for c in EST_OPTIONS])
-	tags = forms.MultipleChoiceField(required = False, label= 'Tags', widget=forms.CheckboxSelectMultiple, choices=TAG_OPTIONS)
+	#tags = forms.MultipleChoiceField(required = False, label= 'Tags', widget=forms.CheckboxSelectMultiple, choices=TAG_OPTIONS)
 	name = forms.CharField(required = False, label='Name', max_length=100)
+	def __init__(self, tags, *args, **kwargs):
+		super(SearchForm, self).__init__(*args, **kwargs)
+		self.fields['tags'] = forms.MultipleChoiceField(required = False, label = 'Tags',widget=forms.CheckboxSelectMultiple, choices=[ (o.name, o.name) for o in tags])
 
 class EstablishmentForm(forms.Form):
 	name = forms.CharField(max_length=64, label="Name")
