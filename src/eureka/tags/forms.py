@@ -11,7 +11,7 @@ class EstablishmentTagsForm(forms.Form):
 	TAG_OPTIONS = ()
 	for tag in all_tags:
 	 	TAG_OPTIONS = TAG_OPTIONS + ((tag.name, tag.name),)
-	#tag_name = forms.ChoiceField(label="Choose the label to apply", choices=TAG_OPTIONS)
+	tag_name = forms.ChoiceField(label="Choose the label to apply", choices=TAG_OPTIONS)
 	establishment_id = forms.IntegerField(widget= forms.HiddenInput())
 	def __init__(self, tags, *args, **kwargs):
 		super(EstablishmentTagsForm, self).__init__(*args, **kwargs)

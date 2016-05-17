@@ -140,7 +140,8 @@ def addEstablishmentTagForm(request, context ={}, establishment_id=-1):
 	if request.method == 'POST':
 		user = get_user(request)
 		if user != None:
-			form = EstablishmentTagsForm(request.POST)
+			all_tags = Tag.db.get_all()
+			form = EstablishmentTagsForm(all_tags,request.POST)
 			establishment_id = form.data['establishment_id']
 			if form.is_valid():
 				tag_name = form.cleaned_data['tag_name']
@@ -179,6 +180,7 @@ def add_new_tag(request, establishment_id=-1):
 				name = form.cleaned_data['name']
 				try:
 					Tag.db.insert(name)
+					EstablishmentTag.db.insert(establishment_id, name, user.name)
 				except:
 					pass
 				return redirect(request, establishment_id)

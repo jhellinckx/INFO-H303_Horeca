@@ -226,6 +226,7 @@ class Establishment(object):
     table = 'Establishment'
  
     def populate(self, db_dict):
+        self.id = db_dict["id"]
         self.name = db_dict["name"]
         self.address_street = db_dict["address_street"]
         self.address_number = db_dict["address_number"]
